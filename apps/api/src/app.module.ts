@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
@@ -16,6 +16,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { AdvancedModule } from './modules/advanced/advanced.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
 import { RateLimitModule, RateLimitGuard } from './modules/rate-limit';
+import { GlobalExceptionFilter } from './common/filters';
+import { SecurityHeadersMiddleware } from './common/middleware';
 
 @Module({
   imports: [
@@ -44,7 +46,15 @@ import { RateLimitModule, RateLimitGuard } from './modules/rate-limit';
       provide: APP_GUARD,
       useClass: RateLimitGuard,
     },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
   exports: [PrismaService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(SecurityHeadersMiddleware).forRoutes('*');
+  }
+}

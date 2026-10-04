@@ -911,4 +911,210 @@ test.describe('Dhanshree Platform Core Engine Test Suite', () => {
       }
     });
   });
+
+  test.describe('Error Handling & Information Leakage Hardening', () => {
+    const { GlobalExceptionFilter } = require(path.resolve(__dirname, 'dist/common/filters/index.js'));
+    const { SecurityHeadersMiddleware } = require(path.resolve(__dirname, 'dist/common/middleware/index.js'));
+    const { BadRequestException, NotFoundException } = require('@nestjs/common');
+
+    // Helper mock host to test NestJS ExceptionFilter
+    function createMockHost(reqOverrides = {}) {
+      const headers = { ...reqOverrides.headers };
+      const resHeaders = {};
+      let responseStatus = null;
+      let responseBody = null;
+
+      const mockRequest = {
+        method: reqOverrides.method || 'GET',
+        url: reqOverrides.url || '/api/v1/catalog/products',
+        headers,
+      };
+
+      const mockResponse = {
+        setHeader: (name, val) => {
+          resHeaders[name.toLowerCase()] = val;
+        },
+        removeHeader: (name) => {
+          delete resHeaders[name.toLowerCase()];
+        },
+        status: (code) => {
+          responseStatus = code;
+          return {
+            json: (payload) => {
+              responseBody = payload;
+            },
+          };
+        },
+      };
+
+      const mockHost = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
+          getResponse: () => mockResponse,
+        }),
+      };
+
+      return { mockHost, mockRequest, mockResponse, getStatus: () => responseStatus, getBody: () => responseBody, getHeaders: () => resHeaders };
+    }
+
+    test('GlobalExceptionFilter: Sanitizes standard HttpException with uniform schema and correlation ID', () => {
+      const filter = new GlobalExceptionFilter();
+      const { mockHost, getStatus, getBody, getHeaders } = createMockHost({
+        headers: { 'x-request-id': 'custom-trace-id-101' },
+        url: '/api/v1/auth/login',
+      });
+
+      filter.catch(new NotFoundException('Product not found in this region'), mockHost);
+
+      assert.equal(getStatus(), 404);
+      const body = getBody();
+      assert.equal(body.statusCode, 404);
+      assert.equal(body.error, 'Not Found');
+      assert.equal(body.message, 'Product not found in this region');
+      assert.equal(body.requestId, 'custom-trace-id-101');
+      assert.equal(body.path, '/api/v1/auth/login');
+      assert.ok(body.timestamp);
+      assert.equal(getHeaders()['x-request-id'], 'custom-trace-id-101');
+    });
+
+    test('GlobalExceptionFilter: Sanitizes Prisma P2002 Unique Constraint and hides column/table metadata', () => {
+      const filter = new GlobalExceptionFilter();
+      const { mockHost, getStatus, getBody } = createMockHost({
+        url: '/api/v1/auth/register',
+      });
+
+      // Simulate a raw Prisma Unique Constraint error that leaks column name & table
+      const simulatedPrismaP2002 = {
+        name: 'PrismaClientKnownRequestError',
+        code: 'P2002',
+        clientVersion: '5.14.0',
+        meta: { target: ['email'], modelName: 'User' },
+        message: 'Unique constraint failed on the fields: (`email`) in table `users`',
+      };
+
+      filter.catch(simulatedPrismaP2002, mockHost);
+
+      assert.equal(getStatus(), 409);
+      const body = getBody();
+      assert.equal(body.statusCode, 409);
+      assert.equal(body.error, 'Resource Conflict');
+      assert.equal(
+        body.message,
+        'A record with the specified unique identifier already exists in our system.',
+      );
+      // Strictly verify no raw table names or column names leaked to client
+      assert.equal(JSON.stringify(body).includes('email'), false);
+      assert.equal(JSON.stringify(body).includes('users'), false);
+      assert.equal(JSON.stringify(body).includes('P2002'), false);
+      assert.equal(JSON.stringify(body).includes('clientVersion'), false);
+    });
+
+    test('GlobalExceptionFilter: Sanitizes Prisma P2025 (Not Found) and P2003 (Foreign Key)', () => {
+      const filter = new GlobalExceptionFilter();
+
+      // P2025: Record not found
+      const host1 = createMockHost({ url: '/api/v1/orders/ORD-999' });
+      filter.catch({ name: 'PrismaClientKnownRequestError', code: 'P2025', message: 'Record to update not found.' }, host1.mockHost);
+      assert.equal(host1.getStatus(), 404);
+      assert.equal(host1.getBody().message, 'The requested resource was not found.');
+
+      // P2003: Foreign Key failure
+      const host2 = createMockHost({ url: '/api/v1/cart/items' });
+      filter.catch({ name: 'PrismaClientKnownRequestError', code: 'P2003', meta: { field_name: 'sellerId' }, message: 'Foreign key constraint failed on the field: `sellerId`' }, host2.mockHost);
+      assert.equal(host2.getStatus(), 400);
+      assert.equal(host2.getBody().error, 'Invalid Association');
+      assert.equal(JSON.stringify(host2.getBody()).includes('sellerId'), false);
+    });
+
+    test('GlobalExceptionFilter: Strips internal stack traces, SQL strings, and file paths on 500 errors', () => {
+      const filter = new GlobalExceptionFilter();
+      const { mockHost, getStatus, getBody, getHeaders } = createMockHost({
+        url: '/api/v1/payments/webhook',
+      });
+
+      // Dangerous raw error containing internal database queries and server paths
+      const internalLeakError = new Error(
+        'Database connection timeout: SELECT * FROM `users` WHERE password_hash = "secret" at /var/app/internal/db.js:142:19',
+      );
+      internalLeakError.stack = 'Error: Database connection timeout\n    at /var/app/internal/db.js:142:19';
+
+      filter.catch(internalLeakError, mockHost);
+
+      assert.equal(getStatus(), 500);
+      const body = getBody();
+      assert.equal(body.statusCode, 500);
+      assert.equal(body.error, 'Internal Server Error');
+      assert.equal(
+        body.message,
+        'An unexpected error occurred. Please contact customer support with the request ID if the issue persists.',
+      );
+
+      // Verify ZERO sensitive internal details leaked
+      const bodyStr = JSON.stringify(body);
+      assert.equal(bodyStr.includes('SELECT'), false);
+      assert.equal(bodyStr.includes('password_hash'), false);
+      assert.equal(bodyStr.includes('/var/app/'), false);
+      assert.equal(bodyStr.includes('stack'), false);
+
+      // Must have generated correlation ID
+      assert.ok(body.requestId);
+      assert.ok(body.requestId.startsWith('req-'));
+      assert.equal(getHeaders()['x-request-id'], body.requestId);
+    });
+
+    test('SecurityHeadersMiddleware: Strips X-Powered-By/Server and enforces OWASP headers', () => {
+      const middleware = new SecurityHeadersMiddleware();
+
+      const reqHeaders = {};
+      const resHeaders = {
+        'x-powered-by': 'Express',
+        server: 'nginx/1.18.0',
+      };
+
+      const req = { headers: reqHeaders };
+      const res = {
+        setHeader: (k, v) => { resHeaders[k.toLowerCase()] = v; },
+        removeHeader: (k) => { delete resHeaders[k.toLowerCase()]; },
+      };
+
+      let nextCalled = false;
+      middleware.use(req, res, () => { nextCalled = true; });
+
+      assert.equal(nextCalled, true);
+      // Verify fingerprint removal
+      assert.equal('x-powered-by' in resHeaders, false, 'X-Powered-By must be removed');
+      assert.equal('server' in resHeaders, false, 'Server header must be removed');
+
+      // Verify OWASP headers
+      assert.equal(resHeaders['x-content-type-options'], 'nosniff');
+      assert.equal(resHeaders['x-frame-options'], 'DENY');
+      assert.equal(resHeaders['x-xss-protection'], '0');
+      assert.equal(resHeaders['referrer-policy'], 'strict-origin-when-cross-origin');
+      assert.ok(resHeaders['permissions-policy']);
+      assert.ok(resHeaders['x-request-id']);
+      assert.equal(req.headers['x-request-id'], resHeaders['x-request-id']);
+    });
+
+    test('Frontend Hardening: Verifies next.config.js disables poweredByHeader and sets security headers', () => {
+      const nextConfigPath = path.resolve(__dirname, '../web/next.config.js');
+      const nextConfig = require(nextConfigPath);
+
+      assert.equal(nextConfig.poweredByHeader, false, 'poweredByHeader must be false');
+      assert.equal(typeof nextConfig.headers, 'function', 'headers function must be defined');
+    });
+
+    test('Frontend Error Boundaries: Verifies error.tsx, not-found.tsx, and global-error.tsx exist', () => {
+      const fs = require('fs');
+      const webAppDir = path.resolve(__dirname, '../web/src/app');
+
+      assert.ok(fs.existsSync(path.join(webAppDir, 'error.tsx')), 'error.tsx must exist');
+      assert.ok(fs.existsSync(path.join(webAppDir, 'not-found.tsx')), 'not-found.tsx must exist');
+      assert.ok(fs.existsSync(path.join(webAppDir, 'global-error.tsx')), 'global-error.tsx must exist');
+
+      // Verify error.tsx does not leak stack traces in JSX
+      const errorContent = fs.readFileSync(path.join(webAppDir, 'error.tsx'), 'utf-8');
+      assert.equal(errorContent.includes('error.stack'), false, 'error.tsx must not render error.stack');
+    });
+  });
 });
+
