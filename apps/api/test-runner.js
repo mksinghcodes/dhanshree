@@ -149,4 +149,301 @@ test.describe('Dhanshree Platform Core Engine Test Suite', () => {
       assert.equal(basicCustomsDuty, 0.0);
     });
   });
+
+  test.describe('Tiered Rate Limiting & Exponential Backoff Engine', () => {
+    const { RateLimitTier, calculateExponentialBackoff } = shared;
+    const {
+      RateLimitConfigService,
+      RateLimitStorage,
+      RateLimitService,
+    } = require(path.resolve(__dirname, 'dist/modules/rate-limit/index.js'));
+
+    test('Exponential backoff algorithm scales mathematically without hard lockout', () => {
+      const threshold = 5;
+      const baseDelaySec = 5;
+      const maxDelaySec = 1800; // 30 minutes
+
+      // Attempts 1 through 4: within threshold -> 0s delay
+      for (let i = 1; i < threshold; i++) {
+        assert.equal(
+          calculateExponentialBackoff(i, threshold, baseDelaySec, maxDelaySec),
+          0,
+          `Attempt ${i} should have 0 backoff delay`,
+        );
+      }
+
+      // Attempt 5 (5th failure reaches threshold): 5 * 2^0 = 5s
+      assert.equal(
+        calculateExponentialBackoff(5, threshold, baseDelaySec, maxDelaySec),
+        5,
+      );
+
+      // Attempt 6: 5 * 2^1 = 10s
+      assert.equal(
+        calculateExponentialBackoff(6, threshold, baseDelaySec, maxDelaySec),
+        10,
+      );
+
+      // Attempt 7: 5 * 2^2 = 20s
+      assert.equal(
+        calculateExponentialBackoff(7, threshold, baseDelaySec, maxDelaySec),
+        20,
+      );
+
+      // Attempt 8: 5 * 2^3 = 40s
+      assert.equal(
+        calculateExponentialBackoff(8, threshold, baseDelaySec, maxDelaySec),
+        40,
+      );
+
+      // Attempt 9: 5 * 2^4 = 80s
+      assert.equal(
+        calculateExponentialBackoff(9, threshold, baseDelaySec, maxDelaySec),
+        80,
+      );
+
+      // Attempt 10: 5 * 2^5 = 160s
+      assert.equal(
+        calculateExponentialBackoff(10, threshold, baseDelaySec, maxDelaySec),
+        160,
+      );
+
+      // Deep repeated brute-force attempts cap at maxDelaySec (1800s = 30m)
+      assert.equal(
+        calculateExponentialBackoff(25, threshold, baseDelaySec, maxDelaySec),
+        1800,
+      );
+    });
+
+    test('Strict Auth tier enforces per-account exponential backoff with account isolation', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigService = {
+        getConfig: () => ({
+          enabled: true,
+          auth: {
+            ipMax: 20,
+            ipWindowMs: 60000,
+            accountMax: 5,
+            accountWindowMs: 900000,
+            baseBackoffSec: 5,
+            maxBackoffSec: 1800,
+          },
+          public: { max: 100, windowMs: 60000 },
+          authenticated: { max: 300, windowMs: 60000 },
+        }),
+      };
+      const rateLimitService = new RateLimitService(mockConfigService, storage);
+
+      const targetAccount = 'buyer@dhanshree.com';
+      const otherAccount = 'seller@dhanshree.com';
+      const ip = '192.168.1.100';
+
+      // First 5 failed attempts: allowed through (accumulating warnings)
+      for (let i = 1; i <= 5; i++) {
+        const check = rateLimitService.checkRateLimit({
+          tier: RateLimitTier.AUTH,
+          ip,
+          accountIdentifier: targetAccount,
+        });
+        assert.equal(check.allowed, true);
+        rateLimitService.recordAuthFailure(targetAccount);
+      }
+
+      // 6th attempt: Exceeds threshold (5 failures) -> triggers 5-second backoff
+      const blockedCheck = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip,
+        accountIdentifier: targetAccount,
+      });
+
+      assert.equal(blockedCheck.allowed, false);
+      assert.equal(blockedCheck.reason, 'ACCOUNT_BACKOFF_ACTIVE');
+      assert.ok(blockedCheck.retryAfterSec > 0);
+      assert.ok(blockedCheck.retryAfterSec <= 5);
+
+      // Verify that other accounts from the same or different IP are NOT blocked (per-account isolation)
+      const otherCheck = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip,
+        accountIdentifier: otherAccount,
+      });
+      assert.equal(otherCheck.allowed, true);
+    });
+
+    test('Successful authentication resets failure counter and clears active backoff', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigService = {
+        getConfig: () => ({
+          enabled: true,
+          auth: {
+            ipMax: 20,
+            ipWindowMs: 60000,
+            accountMax: 3,
+            accountWindowMs: 900000,
+            baseBackoffSec: 10,
+            maxBackoffSec: 1800,
+          },
+          public: { max: 100, windowMs: 60000 },
+          authenticated: { max: 300, windowMs: 60000 },
+        }),
+      };
+      const rateLimitService = new RateLimitService(mockConfigService, storage);
+      const account = 'user@dhanshree.com';
+
+      // Induce 4 failures (threshold is 3)
+      for (let i = 0; i < 4; i++) {
+        rateLimitService.recordAuthFailure(account);
+      }
+
+      // Account should currently be blocked
+      const blocked = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: '10.0.0.1',
+        accountIdentifier: account,
+      });
+      assert.equal(blocked.allowed, false);
+      assert.equal(blocked.reason, 'ACCOUNT_BACKOFF_ACTIVE');
+
+      // User performs successful login
+      rateLimitService.recordAuthSuccess(account);
+
+      // Account backoff should now be lifted immediately
+      const cleared = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: '10.0.0.1',
+        accountIdentifier: account,
+      });
+      assert.equal(cleared.allowed, true);
+    });
+
+    test('Strict Auth tier enforces per-IP limits against credential stuffing', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigService = {
+        getConfig: () => ({
+          enabled: true,
+          auth: {
+            ipMax: 3, // strict test limit: 3 hits per minute
+            ipWindowMs: 60000,
+            accountMax: 10,
+            accountWindowMs: 900000,
+            baseBackoffSec: 5,
+            maxBackoffSec: 1800,
+          },
+          public: { max: 100, windowMs: 60000 },
+          authenticated: { max: 300, windowMs: 60000 },
+        }),
+      };
+      const rateLimitService = new RateLimitService(mockConfigService, storage);
+      const attackIp = '198.51.100.42';
+
+      // Attacker tries different accounts from the same IP
+      const hit1 = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: attackIp,
+        accountIdentifier: 'victim1@mail.com',
+      });
+      assert.equal(hit1.allowed, true);
+      assert.equal(hit1.remaining, 2);
+
+      const hit2 = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: attackIp,
+        accountIdentifier: 'victim2@mail.com',
+      });
+      assert.equal(hit2.allowed, true);
+      assert.equal(hit2.remaining, 1);
+
+      const hit3 = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: attackIp,
+        accountIdentifier: 'victim3@mail.com',
+      });
+      assert.equal(hit3.allowed, true);
+      assert.equal(hit3.remaining, 0);
+
+      // 4th hit from same IP should be blocked even with new account identifier
+      const hit4 = rateLimitService.checkRateLimit({
+        tier: RateLimitTier.AUTH,
+        ip: attackIp,
+        accountIdentifier: 'victim4@mail.com',
+      });
+      assert.equal(hit4.allowed, false);
+      assert.equal(hit4.reason, 'IP_LIMIT_EXCEEDED');
+      assert.ok(hit4.retryAfterSec > 0);
+    });
+
+    test('Public tier enforces moderate per-IP limits', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigService = {
+        getConfig: () => ({
+          enabled: true,
+          auth: { ipMax: 10, ipWindowMs: 60000, accountMax: 5, accountWindowMs: 900000, baseBackoffSec: 5, maxBackoffSec: 1800 },
+          public: { max: 2, windowMs: 60000 },
+          authenticated: { max: 300, windowMs: 60000 },
+        }),
+      };
+      const rateLimitService = new RateLimitService(mockConfigService, storage);
+      const clientIp = '203.0.113.15';
+
+      const res1 = rateLimitService.checkRateLimit({ tier: RateLimitTier.PUBLIC, ip: clientIp });
+      assert.equal(res1.allowed, true);
+      assert.equal(res1.remaining, 1);
+
+      const res2 = rateLimitService.checkRateLimit({ tier: RateLimitTier.PUBLIC, ip: clientIp });
+      assert.equal(res2.allowed, true);
+      assert.equal(res2.remaining, 0);
+
+      const res3 = rateLimitService.checkRateLimit({ tier: RateLimitTier.PUBLIC, ip: clientIp });
+      assert.equal(res3.allowed, false);
+      assert.equal(res3.reason, 'TIER_LIMIT_EXCEEDED');
+      assert.equal(res3.retryAfterSec > 0, true);
+    });
+
+    test('Authenticated tier enforces looser limits keyed by user ID', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigService = {
+        getConfig: () => ({
+          enabled: true,
+          auth: { ipMax: 10, ipWindowMs: 60000, accountMax: 5, accountWindowMs: 900000, baseBackoffSec: 5, maxBackoffSec: 1800 },
+          public: { max: 50, windowMs: 60000 },
+          authenticated: { max: 2, windowMs: 60000 },
+        }),
+      };
+      const rateLimitService = new RateLimitService(mockConfigService, storage);
+      const userA = 'usr-001';
+      const userB = 'usr-002';
+      const sharedIp = '10.20.30.40';
+
+      // User A uses their quota
+      assert.equal(rateLimitService.checkRateLimit({ tier: RateLimitTier.AUTHENTICATED, ip: sharedIp, userId: userA }).allowed, true);
+      assert.equal(rateLimitService.checkRateLimit({ tier: RateLimitTier.AUTHENTICATED, ip: sharedIp, userId: userA }).allowed, true);
+      assert.equal(rateLimitService.checkRateLimit({ tier: RateLimitTier.AUTHENTICATED, ip: sharedIp, userId: userA }).allowed, false);
+
+      // User B sharing same IP has independent looser quota
+      assert.equal(rateLimitService.checkRateLimit({ tier: RateLimitTier.AUTHENTICATED, ip: sharedIp, userId: userB }).allowed, true);
+    });
+
+    test('Configuration is fully dynamic and respects global enable/disable toggle', () => {
+      const storage = new RateLimitStorage();
+      const mockConfigDisabled = {
+        getConfig: () => ({
+          enabled: false,
+          auth: { ipMax: 1, ipWindowMs: 60000, accountMax: 1, accountWindowMs: 900000, baseBackoffSec: 5, maxBackoffSec: 1800 },
+          public: { max: 1, windowMs: 60000 },
+          authenticated: { max: 1, windowMs: 60000 },
+        }),
+      };
+      const service = new RateLimitService(mockConfigDisabled, storage);
+
+      // When disabled, unlimited requests pass
+      for (let i = 0; i < 50; i++) {
+        const res = service.checkRateLimit({
+          tier: RateLimitTier.AUTH,
+          ip: '1.2.3.4',
+          accountIdentifier: 'target@example.com',
+        });
+        assert.equal(res.allowed, true);
+      }
+    });
+  });
 });

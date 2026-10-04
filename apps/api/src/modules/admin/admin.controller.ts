@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -17,8 +17,10 @@ import {
   AdminDisputeItem,
   AdminAuditLog,
 } from '@dhanshree/shared';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @Controller('admin')
+@AuthenticatedRateLimit()
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

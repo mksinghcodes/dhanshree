@@ -1,4 +1,4 @@
-﻿import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -8,9 +8,13 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { AuthenticatedUser } from '@dhanshree/shared';
+import { AuthRateLimit, AuthenticatedRateLimit } from '../rate-limit/decorators/rate-limit.decorator';
+import { RateLimitAuthInterceptor } from '../rate-limit/interceptors/rate-limit-auth.interceptor';
 
 @ApiTags('Authentication & Identity')
 @Controller('api/v1/auth')
+@AuthRateLimit()
+@UseInterceptors(RateLimitAuthInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -48,6 +52,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @AuthenticatedRateLimit()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get profile and permissions of authenticated user' })
   getProfile(@CurrentUser() user: AuthenticatedUser) {

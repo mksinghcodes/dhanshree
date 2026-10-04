@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -16,9 +16,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AuthenticatedUser, UserRole } from '@dhanshree/shared';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @ApiTags('Users, Addresses & KYC')
 @Controller('api/v1')
+@AuthenticatedRateLimit()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

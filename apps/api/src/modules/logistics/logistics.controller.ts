@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Post,
   Body,
@@ -13,8 +13,10 @@ import {
   CrossBorderDutyResult,
   CarrierTrackingWebhookPayload,
 } from '@dhanshree/shared';
+import { PublicRateLimit, SkipRateLimit } from '../rate-limit';
 
 @Controller('logistics')
+@PublicRateLimit()
 export class LogisticsController {
   constructor(private readonly logisticsService: LogisticsService) {}
 
@@ -35,6 +37,7 @@ export class LogisticsController {
   }
 
   @Post('webhooks/carrier')
+  @SkipRateLimit()
   @HttpCode(HttpStatus.OK)
   handleCarrierWebhook(
     @Body() body: CarrierTrackingWebhookPayload,

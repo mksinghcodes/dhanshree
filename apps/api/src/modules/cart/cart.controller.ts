@@ -1,10 +1,12 @@
-﻿import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CountryCode } from '@dhanshree/shared';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @ApiTags('Cart & Bag')
 @Controller('api/v1/cart')
+@AuthenticatedRateLimit()
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 

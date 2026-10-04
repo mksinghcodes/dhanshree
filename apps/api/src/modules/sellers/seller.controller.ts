@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -21,8 +21,10 @@ import {
   ShippingLabelData,
   SellerPayoutRecord,
 } from '@dhanshree/shared';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @Controller('sellers')
+@AuthenticatedRateLimit()
 export class SellerController {
   constructor(private readonly sellerService: SellerService) {}
 

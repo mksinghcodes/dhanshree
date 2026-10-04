@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -21,8 +21,10 @@ import {
   AiChatPrompt,
   AiChatResponse,
 } from '@dhanshree/shared';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @Controller('advanced')
+@AuthenticatedRateLimit()
 export class AdvancedController {
   constructor(private readonly advancedService: AdvancedService) {}
 

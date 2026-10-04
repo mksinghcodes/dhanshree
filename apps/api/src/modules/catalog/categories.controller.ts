@@ -1,9 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
+import { PublicRateLimit } from '../rate-limit';
 
 @ApiTags('Catalog: Categories')
 @Controller('api/v1/categories')
+@PublicRateLimit()
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

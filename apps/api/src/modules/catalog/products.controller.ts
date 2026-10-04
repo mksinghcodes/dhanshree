@@ -1,4 +1,4 @@
-﻿import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { SearchProductsDto } from './dto/search-products.dto';
@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PublicRateLimit, AuthenticatedRateLimit } from '../rate-limit';
 
 @ApiTags('Catalog: Products & PDP')
 @Controller('api/v1/products')
@@ -15,6 +16,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @PublicRateLimit()
   @ApiOperation({ summary: 'Search and filter products with facets and localized country pricing' })
   async searchProducts(@Query() query: SearchProductsDto) {
     const data = await this.productsService.searchProducts(query);
@@ -25,6 +27,7 @@ export class ProductsController {
   }
 
   @Get(':slug')
+  @PublicRateLimit()
   @ApiOperation({ summary: 'Get complete Product Detail Page (PDP) payload with localized price, stock, gallery and reviews' })
   async getProductBySlug(
     @Param('slug') slug: string,
@@ -40,6 +43,7 @@ export class ProductsController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SELLER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @AuthenticatedRateLimit()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new product listing (Vendor/Admin)' })
   async createProduct(

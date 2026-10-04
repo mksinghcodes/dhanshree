@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
@@ -14,6 +15,7 @@ import { SellerModule } from './modules/sellers/seller.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AdvancedModule } from './modules/advanced/advanced.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
+import { RateLimitModule, RateLimitGuard } from './modules/rate-limit';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { LogisticsModule } from './modules/logistics/logistics.module';
       isGlobal: true,
       envFilePath: ['.env', '../../.env'],
     }),
+    RateLimitModule,
     CountryModule,
     AuthModule,
     UsersModule,
@@ -34,7 +37,14 @@ import { LogisticsModule } from './modules/logistics/logistics.module';
     LogisticsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [
+    AppService,
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: RateLimitGuard,
+    },
+  ],
   exports: [PrismaService],
 })
 export class AppModule {}

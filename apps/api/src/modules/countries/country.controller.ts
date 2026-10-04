@@ -1,11 +1,13 @@
-﻿import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CountryService } from './country.service';
 import { CalculateTaxDto } from './dto/tax-calculation.dto';
 import { CurrencyCode } from '@dhanshree/shared';
+import { PublicRateLimit } from '../rate-limit';
 
 @ApiTags('Countries & Taxation')
 @Controller('api/v1')
+@PublicRateLimit()
 export class CountryController {
   constructor(private readonly countryService: CountryService) {}
 

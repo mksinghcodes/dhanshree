@@ -3,9 +3,11 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CheckoutQuoteDto } from './dto/checkout-quote.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { AuthenticatedRateLimit } from '../rate-limit';
 
 @ApiTags('Orders, Checkout & Invoicing')
 @Controller('api/v1')
+@AuthenticatedRateLimit()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
