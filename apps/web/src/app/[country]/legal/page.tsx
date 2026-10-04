@@ -1,18 +1,17 @@
-﻿'use client';
+'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState } from 'react';
 import { CountryCode } from '@dhanshree/shared';
 import { Header } from '../../../components/Header';
+import { useResolvedParams } from '@/lib/params';
 
 interface PageProps {
-  params: Promise<{
-    country: string;
-  }>;
+  params: any;
 }
 
 export default function LegalCompliancePage({ params }: PageProps) {
-  const unwrappedParams = use(params);
-  const countryParam = unwrappedParams.country.toUpperCase();
+  const unwrappedParams = useResolvedParams<{ country: string }>(params);
+  const countryParam = (unwrappedParams.country || 'np').toUpperCase();
 
   const countryCode =
     countryParam === 'IN'

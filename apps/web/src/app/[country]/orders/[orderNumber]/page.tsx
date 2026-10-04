@@ -1,20 +1,18 @@
-﻿'use client';
+'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { CountryCode, OrderStatus, PaymentStatus } from '@dhanshree/shared';
 import { Header } from '../../../../components/Header';
+import { useResolvedParams } from '@/lib/params';
 
 interface PageProps {
-  params: Promise<{
-    country: string;
-    orderNumber: string;
-  }>;
+  params: any;
 }
 
 export default function OrderTrackingPage({ params }: PageProps) {
-  const unwrappedParams = use(params);
-  const countryParam = unwrappedParams.country.toUpperCase();
+  const unwrappedParams = useResolvedParams<{ country: string; orderNumber: string }>(params);
+  const countryParam = (unwrappedParams.country || 'np').toUpperCase();
   const orderNumber = unwrappedParams.orderNumber || 'ORD-2026-NP-89211';
 
   const countryCode =

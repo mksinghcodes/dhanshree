@@ -1,19 +1,18 @@
-﻿'use client';
+'use client';
 
-import React, { use } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { CountryCode, CurrencyCode, AdminDashboardMetrics } from '@dhanshree/shared';
 import { AdminNav } from '../../../components/AdminNav';
+import { useResolvedParams } from '@/lib/params';
 
 interface PageProps {
-  params: Promise<{
-    country: string;
-  }>;
+  params: any;
 }
 
 export default function AdminDashboardPage({ params }: PageProps) {
-  const unwrappedParams = use(params);
-  const countryParam = unwrappedParams.country.toUpperCase();
+  const unwrappedParams = useResolvedParams<{ country: string }>(params);
+  const countryParam = (unwrappedParams.country || 'np').toUpperCase();
 
   const countryCode =
     countryParam === 'IN'
