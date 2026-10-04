@@ -1,40 +1,42 @@
-﻿import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CountryCode } from '@dhanshree/shared';
+import { IsE164Phone, IsOtpCode } from '../../../common/validation';
 
 export class SendOtpRequestDto {
   @ApiProperty({ example: '+9779841234567', description: 'E.164 formatted phone number' })
-  @IsString()
-  @IsNotEmpty()
+  @IsE164Phone()
+  @MaxLength(20, { message: 'phoneNumber must not exceed 20 characters' })
   phoneNumber: string;
 
   @ApiProperty({ enum: CountryCode, example: CountryCode.NEPAL })
-  @IsEnum(CountryCode)
+  @IsEnum(CountryCode, { message: 'countryCode must be a valid CountryCode (NP, IN, AE)' })
   countryCode: CountryCode;
 
   @ApiProperty({ example: 'LOGIN', enum: ['LOGIN', 'REGISTER', 'COD_VERIFICATION', 'PHONE_VERIFY'] })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'purpose must be a string' })
+  @IsIn(['LOGIN', 'REGISTER', 'COD_VERIFICATION', 'PHONE_VERIFY'], {
+    message: 'purpose must be one of: LOGIN, REGISTER, COD_VERIFICATION, PHONE_VERIFY',
+  })
   purpose: 'LOGIN' | 'REGISTER' | 'COD_VERIFICATION' | 'PHONE_VERIFY';
 }
 
 export class VerifyOtpRequestDto {
   @ApiProperty({ example: '+9779841234567' })
-  @IsString()
-  @IsNotEmpty()
+  @IsE164Phone()
+  @MaxLength(20, { message: 'phoneNumber must not exceed 20 characters' })
   phoneNumber: string;
 
   @ApiProperty({ example: '123456', description: '6-digit OTP passcode' })
-  @IsString()
-  @IsNotEmpty()
+  @IsOtpCode()
   otpCode: string;
 
   @ApiProperty({ enum: CountryCode, example: CountryCode.NEPAL })
-  @IsEnum(CountryCode)
+  @IsEnum(CountryCode, { message: 'countryCode must be a valid CountryCode (NP, IN, AE)' })
   countryCode: CountryCode;
 
-  @ApiProperty({ example: 'LOGIN', required: false })
+  @ApiPropertyOptional({ example: 'LOGIN', enum: ['LOGIN', 'REGISTER', 'COD_VERIFICATION', 'PHONE_VERIFY'] })
   @IsOptional()
-  @IsString()
+  @IsIn(['LOGIN', 'REGISTER', 'COD_VERIFICATION', 'PHONE_VERIFY'])
   purpose?: string;
 }

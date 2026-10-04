@@ -14,6 +14,9 @@ import {
   CarrierTrackingWebhookPayload,
 } from '@dhanshree/shared';
 import { PublicRateLimit, SkipRateLimit } from '../rate-limit';
+import { CourierServiceabilityDto } from './dto/courier-serviceability.dto';
+import { CrossBorderDutyDto } from './dto/cross-border-duty.dto';
+import { CarrierTrackingWebhookDto } from './dto/carrier-webhook.dto';
 
 @Controller('logistics')
 @PublicRateLimit()
@@ -23,7 +26,7 @@ export class LogisticsController {
   @Post('serviceability')
   @HttpCode(HttpStatus.OK)
   checkServiceability(
-    @Body() body: CourierServiceabilityRequest,
+    @Body() body: CourierServiceabilityDto,
   ): CourierServiceabilityResult {
     return this.logisticsService.checkServiceability(body);
   }
@@ -31,7 +34,7 @@ export class LogisticsController {
   @Post('cross-border/estimate')
   @HttpCode(HttpStatus.OK)
   estimateCrossBorderDuty(
-    @Body() body: CrossBorderDutyRequest,
+    @Body() body: CrossBorderDutyDto,
   ): CrossBorderDutyResult {
     return this.logisticsService.estimateCrossBorderDuty(body);
   }
@@ -40,7 +43,7 @@ export class LogisticsController {
   @SkipRateLimit()
   @HttpCode(HttpStatus.OK)
   handleCarrierWebhook(
-    @Body() body: CarrierTrackingWebhookPayload,
+    @Body() body: CarrierTrackingWebhookDto,
   ) {
     return this.logisticsService.handleCarrierWebhook(body);
   }

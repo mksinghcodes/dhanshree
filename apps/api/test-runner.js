@@ -1,3 +1,4 @@
+require('reflect-metadata');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
@@ -444,6 +445,345 @@ test.describe('Dhanshree Platform Core Engine Test Suite', () => {
         });
         assert.equal(res.allowed, true);
       }
+    });
+  });
+
+  test.describe('Strict Schema Input Validation & Non-Sanitizing Rejection', () => {
+    const {
+      validateStrictSchema,
+      VALIDATION_PATTERNS,
+      VALIDATION_LIMITS,
+    } = shared;
+
+    const { StrictValidationPipe } = require(path.resolve(__dirname, 'dist/common/validation/index.js'));
+    const { RegisterDto } = require(path.resolve(__dirname, 'dist/modules/auth/dto/register.dto.js'));
+    const { LoginDto } = require(path.resolve(__dirname, 'dist/modules/auth/dto/login.dto.js'));
+    const { SendOtpRequestDto, VerifyOtpRequestDto } = require(path.resolve(__dirname, 'dist/modules/auth/dto/otp.dto.js'));
+    const { CreateProductDto } = require(path.resolve(__dirname, 'dist/modules/catalog/dto/create-product.dto.js'));
+    const { AddCartItemDto } = require(path.resolve(__dirname, 'dist/modules/cart/dto/add-cart-item.dto.js'));
+    const { ApplyCouponDto } = require(path.resolve(__dirname, 'dist/modules/cart/dto/apply-coupon.dto.js'));
+    const { SubmitSellerKycDto } = require(path.resolve(__dirname, 'dist/modules/users/dto/seller-kyc.dto.js'));
+    const { CalculateTaxDto } = require(path.resolve(__dirname, 'dist/modules/countries/dto/tax-calculation.dto.js'));
+
+    const pipe = new StrictValidationPipe();
+
+    test('Shared Schema Engine: Rejects inputs containing HTML markup outright without escaping', () => {
+      const maliciousPayloads = [
+        '<script>alert("xss")</script>',
+        '<img src=x onerror=alert(1)>',
+        'Hello <b>World</b>',
+        '"><iframe src="javascript:alert(1)">',
+        '<<SCRIPT>alert("XSS");//<</SCRIPT>',
+      ];
+
+      for (const payload of maliciousPayloads) {
+        const result = validateStrictSchema(
+          { title: payload },
+          [{ field: 'title', type: 'string', minLength: 2, maxLength: 100, disallowHtml: true }],
+          false,
+        );
+
+        assert.equal(result.valid, false, `Payload "${payload}" must be rejected`);
+        assert.ok(result.errors.length > 0);
+        assert.ok(result.errors.some((e) => e.constraint === 'noHtmlMarkup'));
+        // Crucial requirement: Verify input was NOT sanitized or mutated
+        assert.equal(payload.includes('<'), true, 'Original input was unchanged and rejected outright');
+      }
+    });
+
+    test('Shared Schema Engine: Rejects null bytes and ASCII control characters', () => {
+      const payloadsWithControl = [
+        'user\0admin',
+        'malicious\x07bell',
+        'dangerous\x1Funit',
+      ];
+
+      for (const payload of payloadsWithControl) {
+        const result = validateStrictSchema(
+          { username: payload },
+          [{
+            field: 'username',
+            type: 'string',
+            minLength: 2,
+            maxLength: 50,
+            pattern: VALIDATION_PATTERNS.NO_CONTROL_CHARS,
+            patternMessage: 'username cannot contain control characters',
+          }],
+          false,
+        );
+
+        assert.equal(result.valid, false);
+        assert.ok(result.errors.length > 0);
+      }
+    });
+
+    test('Shared Schema Engine: Rejects undeclared / unknown properties when allowUnknown is false', () => {
+      const data = {
+        name: 'Valid Name',
+        injectedAdminPrivilege: true,
+      };
+
+      const result = validateStrictSchema(
+        data,
+        [{ field: 'name', type: 'string', minLength: 1 }],
+        false,
+      );
+
+      assert.equal(result.valid, false);
+      assert.ok(result.errors.some((e) => e.constraint === 'forbidNonWhitelisted' && e.field === 'injectedAdminPrivilege'));
+    });
+
+    test('Shared Schema Engine: Validates format patterns (E.164 phone, Nepal PAN, India GSTIN, UAE TRN)', () => {
+      // Valid patterns
+      assert.ok(VALIDATION_PATTERNS.PHONE_E164.test('+9779841234567'));
+      assert.ok(VALIDATION_PATTERNS.PHONE_E164.test('+919876543210'));
+      assert.ok(VALIDATION_PATTERNS.PHONE_E164.test('+971501234567'));
+      assert.ok(VALIDATION_PATTERNS.NEPAL_PAN.test('601234567'));
+      assert.ok(VALIDATION_PATTERNS.INDIA_PAN.test('ABCDE1234F'));
+      assert.ok(VALIDATION_PATTERNS.INDIA_GSTIN.test('27ABCDE1234F1Z5'));
+      assert.ok(VALIDATION_PATTERNS.UAE_TRN.test('100234567800003'));
+
+      // Invalid patterns that must fail
+      assert.equal(VALIDATION_PATTERNS.PHONE_E164.test('0984123456'), false);
+      assert.equal(VALIDATION_PATTERNS.PHONE_E164.test('+123'), false);
+      assert.equal(VALIDATION_PATTERNS.NEPAL_PAN.test('12345'), false); // Only 5 digits
+      assert.equal(VALIDATION_PATTERNS.NEPAL_PAN.test('6012345678'), false); // 10 digits
+      assert.equal(VALIDATION_PATTERNS.INDIA_PAN.test('12345ABCDE'), false); // Wrong order
+      assert.equal(VALIDATION_PATTERNS.UAE_TRN.test('200234567800003'), false); // Must start with 100
+    });
+
+    test('StrictValidationPipe: Rejects HTML markup with HTTP 400 without mutating input', async () => {
+      const maliciousRegisterPayload = {
+        email: 'attacker@evil.com',
+        password: 'Password123!',
+        fullName: '<script>alert("pwned")</script>',
+        preferredCountry: 'NP',
+      };
+
+      await assert.rejects(
+        async () => {
+          await pipe.transform(maliciousRegisterPayload, {
+            type: 'body',
+            metatype: RegisterDto,
+          });
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.equal(body.statusCode, 400);
+          assert.ok(
+            body.validationErrors.some(
+              (e) => e.field === 'fullName' && e.constraint === 'isStrictText',
+            ),
+          );
+          return true;
+        },
+      );
+    });
+
+    test('StrictValidationPipe: Rejects non-whitelisted/unknown fields with HTTP 400', async () => {
+      const payloadWithAdminBypass = {
+        email: 'user@example.com',
+        password: 'Password123!',
+        fullName: 'Valid User',
+        preferredCountry: 'NP',
+        role: 'ADMIN', // Allowed
+        isSuperAdmin: true, // Non-whitelisted property injection attempt
+      };
+
+      await assert.rejects(
+        async () => {
+          await pipe.transform(payloadWithAdminBypass, {
+            type: 'body',
+            metatype: RegisterDto,
+          });
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(
+            body.validationErrors.some(
+              (e) => e.field === 'isSuperAdmin' && e.constraint === 'whitelistValidation',
+            ),
+          );
+          return true;
+        },
+      );
+    });
+
+    test('StrictValidationPipe: Rejects type mismatches without coercion', async () => {
+      const invalidProductPayload = {
+        title: 'Sony WH-1000XM5',
+        description: 'High-end noise cancelling headphones with LDAC',
+        categoryId: 'cat-audio',
+        storeId: 'store-sony',
+        sku: 'SONY-WH1000XM5-MAIN',
+        basePrice: 'not-a-number', // String instead of number
+      };
+
+      await assert.rejects(
+        async () => {
+          await pipe.transform(invalidProductPayload, {
+            type: 'body',
+            metatype: CreateProductDto,
+          });
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(
+            body.validationErrors.some(
+              (e) => e.field === 'basePrice' && e.constraint === 'isNumber',
+            ),
+          );
+          return true;
+        },
+      );
+    });
+
+    test('StrictValidationPipe: Validates OTP 6-digit strict numeric scheme', async () => {
+      // Rejects 4 digits
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            { phoneNumber: '+9779841234567', countryCode: 'NP', otpCode: '1234' },
+            { type: 'body', metatype: VerifyOtpRequestDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(body.validationErrors.some((e) => e.field === 'otpCode'));
+          return true;
+        },
+      );
+
+      // Rejects non-numeric letters
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            { phoneNumber: '+9779841234567', countryCode: 'NP', otpCode: 'ABC123' },
+            { type: 'body', metatype: VerifyOtpRequestDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          return true;
+        },
+      );
+
+      // Accepts valid 6-digit numeric OTP
+      const validRes = await pipe.transform(
+        { phoneNumber: '+9779841234567', countryCode: 'NP', otpCode: '849201' },
+        { type: 'body', metatype: VerifyOtpRequestDto },
+      );
+      assert.equal(validRes.otpCode, '849201');
+    });
+
+    test('StrictValidationPipe: Validates Cart operations & rejects negative quantities', async () => {
+      // Rejects quantity <= 0
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            { variantId: 'var-123', quantity: -2 },
+            { type: 'body', metatype: AddCartItemDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(body.validationErrors.some((e) => e.field === 'quantity'));
+          return true;
+        },
+      );
+
+      // Rejects invalid coupon code with malicious characters
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            { couponCode: 'DISCOUNT; DROP TABLE users;--' },
+            { type: 'body', metatype: ApplyCouponDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(body.validationErrors.some((e) => e.field === 'couponCode'));
+          return true;
+        },
+      );
+
+      // Accepts valid coupon code
+      const couponRes = await pipe.transform(
+        { couponCode: 'DASHAIN2026' },
+        { type: 'body', metatype: ApplyCouponDto },
+      );
+      assert.equal(couponRes.couponCode, 'DASHAIN2026');
+    });
+
+    test('StrictValidationPipe: Enforces country KYC format rules (Nepal PAN, India PAN/GSTIN, UAE TRN)', async () => {
+      // Rejects invalid Nepal PAN (must be 9 digits)
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            {
+              companyName: 'Himalayan Crafts',
+              businessType: 'PVT_LTD',
+              operationalCountry: 'NP',
+              nepalPanVatNumber: '98765', // Invalid: 5 digits instead of 9
+            },
+            { type: 'body', metatype: SubmitSellerKycDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(
+            body.validationErrors.some(
+              (e) => e.field === 'nepalPanVatNumber' && e.constraint === 'isNepalPan',
+            ),
+          );
+          return true;
+        },
+      );
+
+      // Rejects invalid India PAN
+      await assert.rejects(
+        async () => {
+          await pipe.transform(
+            {
+              companyName: 'Bharat Exports',
+              businessType: 'PVT_LTD',
+              operationalCountry: 'IN',
+              indiaPanNumber: 'INVALID_PAN',
+            },
+            { type: 'body', metatype: SubmitSellerKycDto },
+          );
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          const body = err.getResponse();
+          assert.ok(
+            body.validationErrors.some(
+              (e) => e.field === 'indiaPanNumber' && e.constraint === 'isIndiaPan',
+            ),
+          );
+          return true;
+        },
+      );
+
+      // Accepts valid KYC submissions
+      const validKyc = await pipe.transform(
+        {
+          companyName: 'Kathmandu Pashmina Exports Pvt. Ltd.',
+          businessType: 'PVT_LTD',
+          operationalCountry: 'NP',
+          nepalPanVatNumber: '601987654',
+        },
+        { type: 'body', metatype: SubmitSellerKycDto },
+      );
+      assert.equal(validKyc.companyName, 'Kathmandu Pashmina Exports Pvt. Ltd.');
+      assert.equal(validKyc.nepalPanVatNumber, '601987654');
     });
   });
 });

@@ -18,6 +18,9 @@ import {
   AdminAuditLog,
 } from '@dhanshree/shared';
 import { AuthenticatedRateLimit } from '../rate-limit';
+import { AdminKycDecisionDto } from './dto/admin-kyc-decision.dto';
+import { UpdateCommissionRuleDto } from './dto/admin-commission.dto';
+import { ResolveDisputeDto } from './dto/admin-dispute.dto';
 
 @Controller('admin')
 @AuthenticatedRateLimit()
@@ -38,7 +41,7 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   reviewSellerKyc(
     @Param('id') kycId: string,
-    @Body() body: { decision: 'VERIFY' | 'REJECT'; notes?: string; commissionOverride?: number },
+    @Body() body: AdminKycDecisionDto,
   ): AdminSellerKycItem {
     return this.adminService.reviewSellerKyc(
       kycId,
@@ -58,7 +61,7 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   updateCommissionRule(
     @Param('id') ruleId: string,
-    @Body() body: { ratePercent: number },
+    @Body() body: UpdateCommissionRuleDto,
   ): AdminCommissionRule {
     return this.adminService.updateCommissionRule(
       ruleId,
@@ -76,7 +79,7 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   resolveDispute(
     @Param('id') disputeId: string,
-    @Body() body: { decision: 'REFUND_BUYER' | 'RELEASE_SELLER'; notes: string },
+    @Body() body: ResolveDisputeDto,
   ): AdminDisputeItem {
     return this.adminService.resolveDispute(
       disputeId,

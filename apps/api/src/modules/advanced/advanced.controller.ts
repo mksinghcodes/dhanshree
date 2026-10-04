@@ -22,6 +22,10 @@ import {
   AiChatResponse,
 } from '@dhanshree/shared';
 import { AuthenticatedRateLimit } from '../rate-limit';
+import { PlaceBidDto } from './dto/place-bid.dto';
+import { MakeOfferDto } from './dto/make-offer.dto';
+import { RfqInquiryDto } from './dto/rfq-inquiry.dto';
+import { AiChatPromptDto } from './dto/ai-chat.dto';
 
 @Controller('advanced')
 @AuthenticatedRateLimit()
@@ -37,18 +41,24 @@ export class AdvancedController {
   @HttpCode(HttpStatus.OK)
   placeBid(
     @Param('id') auctionId: string,
-    @Body() body: { amount: number; bidderEmail: string },
+    @Body() body: PlaceBidDto,
   ): AuctionItem {
-    return this.advancedService.placeBid(auctionId, body.amount, body.bidderEmail || 'buyer@example.com');
+    return this.advancedService.placeBid(auctionId, body.amount, body.bidderEmail);
   }
 
   @Post('auctions/:id/offer')
   @HttpCode(HttpStatus.OK)
   makeOffer(
     @Param('id') auctionId: string,
-    @Body() body: MakeOfferInput,
+    @Body() body: MakeOfferDto,
   ): MakeOfferResult {
-    return this.advancedService.makeOffer({ ...body, auctionId });
+    return this.advancedService.makeOffer({
+      auctionId: body.auctionId || auctionId,
+      buyerName: body.buyerName,
+      buyerEmail: body.buyerEmail,
+      offerAmount: body.offerAmount,
+      message: body.message,
+    });
   }
 
   @Get('rfq/products')
@@ -58,7 +68,7 @@ export class AdvancedController {
 
   @Post('rfq/inquiry')
   @HttpCode(HttpStatus.CREATED)
-  submitRfq(@Body() body: RfqInquiryInput): RfqInquiryResult {
+  submitRfq(@Body() body: RfqInquiryDto): RfqInquiryResult {
     return this.advancedService.submitRfq(body);
   }
 
@@ -80,7 +90,7 @@ export class AdvancedController {
 
   @Post('ai-assistant/chat')
   @HttpCode(HttpStatus.OK)
-  chatWithAiAssistant(@Body() prompt: AiChatPrompt): AiChatResponse {
+  chatWithAiAssistant(@Body() prompt: AiChatPromptDto): AiChatResponse {
     return this.advancedService.chatWithAiAssistant(prompt);
   }
 }

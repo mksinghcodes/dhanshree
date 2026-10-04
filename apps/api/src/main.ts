@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { StrictValidationPipe } from './common/validation';
 
 async function bootstrap() {
   const logger = new Logger('Dhanshree-Bootstrap');
@@ -12,13 +13,9 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  // Strict schema validation: Rejects any input that violates type, length, or format.
+  // Rejects unexpected properties (forbidNonWhitelisted: true). Never sanitizes/escapes.
+  app.useGlobalPipes(new StrictValidationPipe());
 
   // OpenAPI / Swagger Documentation
   const config = new DocumentBuilder()

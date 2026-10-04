@@ -3,6 +3,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CountryCode } from '@dhanshree/shared';
 import { AuthenticatedRateLimit } from '../rate-limit';
+import { AddCartItemDto } from './dto/add-cart-item.dto';
+import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { ApplyCouponDto } from './dto/apply-coupon.dto';
 
 @ApiTags('Cart & Bag')
 @Controller('api/v1/cart')
@@ -29,7 +32,7 @@ export class CartController {
   addItem(
     @Headers('x-session-id') sessionId: string | undefined,
     @Headers('x-country-code') countryCode: CountryCode | undefined,
-    @Body() body: { variantId: string; quantity: number },
+    @Body() body: AddCartItemDto,
   ) {
     const ownerKey = sessionId || 'default-guest-session';
     const country = countryCode || CountryCode.NEPAL;
@@ -44,12 +47,12 @@ export class CartController {
   updateItem(
     @Headers('x-session-id') sessionId: string | undefined,
     @Param('variantId') variantId: string,
-    @Body('quantity') quantity: number,
+    @Body() body: UpdateCartItemDto,
   ) {
     const ownerKey = sessionId || 'default-guest-session';
     return {
       status: 'SUCCESS',
-      data: this.cartService.updateQuantity(ownerKey, variantId, quantity),
+      data: this.cartService.updateQuantity(ownerKey, variantId, body.quantity),
     };
   }
 
@@ -70,12 +73,12 @@ export class CartController {
   @ApiOperation({ summary: 'Apply festival promotional coupon code (e.g. DASHAIN2026, DIWALI2026, RAMADAN2026)' })
   applyCoupon(
     @Headers('x-session-id') sessionId: string | undefined,
-    @Body('couponCode') couponCode: string,
+    @Body() body: ApplyCouponDto,
   ) {
     const ownerKey = sessionId || 'default-guest-session';
     return {
       status: 'SUCCESS',
-      data: this.cartService.applyCoupon(ownerKey, couponCode),
+      data: this.cartService.applyCoupon(ownerKey, body.couponCode),
     };
   }
 }

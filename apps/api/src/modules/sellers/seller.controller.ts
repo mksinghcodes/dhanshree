@@ -22,6 +22,10 @@ import {
   SellerPayoutRecord,
 } from '@dhanshree/shared';
 import { AuthenticatedRateLimit } from '../rate-limit';
+import { CreateSellerProductDto } from './dto/create-seller-product.dto';
+import { AiDescriptionDto } from './dto/ai-description.dto';
+import { BulkUploadProductsDto } from './dto/bulk-upload.dto';
+import { RequestPayoutDto } from './dto/request-payout.dto';
 
 @Controller('sellers')
 @AuthenticatedRateLimit()
@@ -45,14 +49,14 @@ export class SellerController {
 
   @Post('products')
   @HttpCode(HttpStatus.CREATED)
-  createProduct(@Body() input: CreateSellerProductInput): SellerProductItem {
+  createProduct(@Body() input: CreateSellerProductDto): SellerProductItem {
     return this.sellerService.createProduct('demo-seller-1', input);
   }
 
   @Post('products/ai-description')
   @HttpCode(HttpStatus.OK)
   generateAiDescription(
-    @Body() body: { title: string; category: string; keyFeatures?: string[] },
+    @Body() body: AiDescriptionDto,
   ) {
     return this.sellerService.generateAiProductDescription(body);
   }
@@ -60,7 +64,7 @@ export class SellerController {
   @Post('products/bulk-upload')
   @HttpCode(HttpStatus.OK)
   bulkUploadProducts(
-    @Body() body: { csvContent: string },
+    @Body() body: BulkUploadProductsDto,
   ): BulkUploadResult {
     return this.sellerService.bulkUploadProducts('demo-seller-1', body.csvContent);
   }
@@ -90,7 +94,7 @@ export class SellerController {
   @Post('payouts/request')
   @HttpCode(HttpStatus.CREATED)
   requestPayout(
-    @Body() body: { amount: number; bankInfo: { bankName: string; accountNumber: string } },
+    @Body() body: RequestPayoutDto,
   ): SellerPayoutRecord {
     return this.sellerService.requestPayout('demo-seller-1', body.amount, body.bankInfo);
   }
