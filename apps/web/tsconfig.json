@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@dhanshree/shared": ["../../packages/shared/dist"]
+      "@dhanshree/shared": ["../../packages/shared/dist", "../../packages/shared/src/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
