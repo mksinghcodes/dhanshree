@@ -108,7 +108,14 @@ async function main() {
   console.log('✅ Tax rules seeded: Nepal VAT, India GST/TCS, UAE VAT');
 
   // 4. Seed Demo Users & Roles
-  const defaultPassword = await bcrypt.hash('MarketplaceSecret2026!', 10);
+  const seedPassword =
+    process.env.SEED_DEFAULT_PASSWORD ||
+    (process.env.NODE_ENV === 'production'
+      ? (() => {
+          throw new Error('SEED_DEFAULT_PASSWORD environment variable must be specified for seeding in production');
+        })()
+      : 'MarketplaceSecret2026!');
+  const defaultPassword = await bcrypt.hash(seedPassword, 10);
 
   // Super Admin
   const superAdmin = await prisma.user.upsert({

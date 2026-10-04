@@ -5,9 +5,19 @@ export async function POST(req: Request) {
   try {
     const { orderNumber, amount } = await req.json();
 
-    const merchantCode = process.env.ESEWA_MERCHANT_CODE || 'EPAYTEST';
-    const secretKey = process.env.ESEWA_SECRET_KEY || '8gBm/:&EnhH.1/q';
-    const esewaUrl = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+    const isProduction = process.env.NODE_ENV === 'production';
+    const merchantCode = process.env.ESEWA_MERCHANT_CODE || (isProduction ? '' : 'EPAYTEST');
+    const secretKey = process.env.ESEWA_SECRET_KEY || (isProduction ? '' : '8gBm/:&EnhH.1/q');
+    const esewaUrl = isProduction
+      ? (process.env.ESEWA_API_URL || 'https://epay.esewa.com.np/api/epay/main/v2/form')
+      : (process.env.ESEWA_API_URL || 'https://rc-epay.esewa.com.np/api/epay/main/v2/form');
+
+    if (isProduction && (!merchantCode || !secretKey || secretKey === '8gBm/:&EnhH.1/q')) {
+      return NextResponse.json(
+        { error: 'eSewa gateway credentials not configured in production' },
+        { status: 500 },
+      );
+    }
 
     const transactionUuid = `${orderNumber || 'ORD-' + Date.now()}-${Date.now().toString().slice(-4)}`;
     const totalAmount = Number(amount || 100).toFixed(2);

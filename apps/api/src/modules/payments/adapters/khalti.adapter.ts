@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getKhaltiSecretKey } from '../../../common/config';
 
 @Injectable()
 export class KhaltiPaymentAdapter {
   private readonly logger = new Logger(KhaltiPaymentAdapter.name);
 
   private readonly publicKey = process.env.KHALTI_PUBLIC_KEY || 'test_public_key_77a94b';
-  private readonly secretKey = process.env.KHALTI_SECRET_KEY || 'test_secret_key_88b12c';
+  private readonly secretKey = getKhaltiSecretKey();
   private readonly apiUrl = process.env.KHALTI_API_URL || 'https://a.khalti.com/api/v2';
 
   createPaymentPayload(orderNumber: string, amountNpr: number) {

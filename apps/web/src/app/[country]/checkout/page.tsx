@@ -339,23 +339,24 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                         </div>
                         <span className="px-2 py-0.5 rounded bg-green-600 text-white text-[10px] font-bold">Recommended</span>
                       </label>
-                      {paymentMethod === PaymentMethod.ESEWA && (
+                      {paymentMethod === PaymentMethod.ESEWA && gatewayMode === 'SANDBOX' && (
                         <div className="p-3 bg-green-50 border border-green-200 rounded-xl space-y-1.5 text-xs">
                           <div className="flex items-center justify-between font-bold text-green-900">
                             <span className="flex items-center gap-1.5">
-                              <span>🟢</span> Official eSewa UAT Gateway
+                              <span>🟢</span> Official eSewa Gateway Integration
                             </span>
                             <span className="text-[10px] bg-green-200 text-green-800 px-2 py-0.5 rounded-full font-mono">
                               rc-epay.esewa.com.np
                             </span>
                           </div>
                           <p className="text-[11px] text-green-800">
-                            <strong>"Place Order"</strong> थिच्दा सिधै eSewa को आधिकारिक टेस्ट स्क्रिन खुल्नेछ।
+                            <strong>"Place Order"</strong> redirects to the secure eSewa EPAY v2 gateway to complete payment.
                           </p>
-                          <div className="bg-white/90 p-2 rounded-lg border border-green-200 font-mono text-[11px] text-slate-700 space-y-0.5">
-                            <div><strong>eSewa Test ID:</strong> 9806800001 वा 9806800002</div>
-                            <div><strong>Password:</strong> Nepal@123 | <strong>MPIN:</strong> 1122 | <strong>Token:</strong> 123456</div>
-                          </div>
+                          {process.env.NODE_ENV !== 'production' && (
+                            <div className="bg-white/90 p-2 rounded-lg border border-green-200 font-mono text-[11px] text-slate-700 space-y-0.5">
+                              <div><strong>Sandbox Note:</strong> Testing mode active via environment configuration.</div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

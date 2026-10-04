@@ -1,12 +1,13 @@
-﻿import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { getRazorpayKeySecret } from '../../../common/config';
 
 @Injectable()
 export class RazorpayPaymentAdapter {
   private readonly logger = new Logger(RazorpayPaymentAdapter.name);
 
   private readonly keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_sampleKey123';
-  private readonly keySecret = process.env.RAZORPAY_KEY_SECRET || 'sampleSecretKeyIndia123';
+  private readonly keySecret = getRazorpayKeySecret();
 
   createOrderPayload(orderNumber: string, amountInr: number) {
     const amountInPaise = Math.round(amountInr * 100);

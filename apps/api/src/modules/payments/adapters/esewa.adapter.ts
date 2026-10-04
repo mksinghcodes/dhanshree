@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { getEsewaSecretKey } from '../../../common/config';
 
 @Injectable()
 export class EsewaPaymentAdapter {
   private readonly logger = new Logger(EsewaPaymentAdapter.name);
 
   private readonly merchantCode = process.env.ESEWA_MERCHANT_CODE || 'EPAYTEST';
-  private readonly secretKey = process.env.ESEWA_SECRET_KEY || '8gBm/:&EnhH.1/q';
+  private readonly secretKey = getEsewaSecretKey();
   private readonly esewaUrl =
     process.env.ESEWA_API_URL || 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
 

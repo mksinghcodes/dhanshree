@@ -10,16 +10,25 @@ export async function POST(req: Request) {
     const protocol = req.headers.get('x-forwarded-proto') || 'http';
     const baseUrl = `${protocol}://${host}`;
 
+    const isProduction = process.env.NODE_ENV === 'production';
+    const paymentUrl = isProduction
+      ? `https://pay.khalti.com/?pidx=${pidx}`
+      : `https://test-pay.khalti.com/?pidx=${pidx}`;
+
     return NextResponse.json({
       pidx,
-      paymentUrl: `https://test-pay.khalti.com/?pidx=${pidx}`,
+      paymentUrl,
       amountInPaisa,
       returnUrl: `${baseUrl}/np/orders/${orderNumber}?payment=success&gateway=khalti`,
-      testCredentials: {
-        mobile: '9800000000 / 9800000001',
-        mpin: '1111',
-        otp: '987654',
-      },
+      ...(isProduction
+        ? {}
+        : {
+            testCredentials: {
+              mobile: '9800000000 / 9800000001',
+              mpin: '1111',
+              otp: '987654',
+            },
+          }),
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

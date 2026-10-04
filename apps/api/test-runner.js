@@ -786,4 +786,129 @@ test.describe('Dhanshree Platform Core Engine Test Suite', () => {
       assert.equal(validKyc.nepalPanVatNumber, '601987654');
     });
   });
+
+  test.describe('Zero Hardcoded Secrets & Production Environment Guardrails', () => {
+    const {
+      getSecureSecret,
+      getJwtSecret,
+      getJwtRefreshSecret,
+      getEsewaSecretKey,
+      getKhaltiSecretKey,
+      getRazorpayKeySecret,
+    } = require(path.resolve(__dirname, 'dist/common/config/secrets.config.js'));
+
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    test.afterEach(() => {
+      process.env.NODE_ENV = originalNodeEnv;
+    });
+
+    test('Non-Production: Safely resolves configured environment variables or defaults', () => {
+      process.env.NODE_ENV = 'test';
+      const keyName = 'TEST_CUSTOM_SECRET_KEY_' + Date.now();
+
+      // When absent, uses fallback
+      const fallbackVal = getSecureSecret(keyName, { fallbackDev: 'dev_default_sample' });
+      assert.equal(fallbackVal, 'dev_default_sample');
+
+      // When configured in environment, uses configured value
+      process.env[keyName] = 'my_custom_env_value_123';
+      const configuredVal = getSecureSecret(keyName, { fallbackDev: 'dev_default_sample' });
+      assert.equal(configuredVal, 'my_custom_env_value_123');
+
+      delete process.env[keyName];
+    });
+
+    test('Production Guardrail: Strictly throws if required secret is missing in production', () => {
+      process.env.NODE_ENV = 'production';
+      const missingKey = 'NON_EXISTENT_PROD_SECRET_' + Date.now();
+
+      assert.throws(
+        () => {
+          getSecureSecret(missingKey, { requiredInProd: true });
+        },
+        (err) => {
+          assert.ok(err.message.includes('[SECURITY FATAL]'));
+          assert.ok(err.message.includes(missingKey));
+          return true;
+        },
+      );
+    });
+
+    test('Production Guardrail: Strictly throws if production secret matches known insecure dev fallback', () => {
+      process.env.NODE_ENV = 'production';
+      const keyName = 'TEST_LEAKED_DEFAULT_' + Date.now();
+      const insecureDefault = 'super_secret_jwt_sign_key_phase1_test_xyz123!';
+
+      process.env[keyName] = insecureDefault;
+
+      assert.throws(
+        () => {
+          getSecureSecret(keyName, { fallbackDev: insecureDefault, requiredInProd: true });
+        },
+        (err) => {
+          assert.ok(err.message.includes('[SECURITY FATAL]'));
+          assert.ok(err.message.includes('known insecure development fallback'));
+          return true;
+        },
+      );
+
+      delete process.env[keyName];
+    });
+
+    test('Production Guardrail: Strictly enforces minimum secret length (>= 32 chars) in production', () => {
+      process.env.NODE_ENV = 'production';
+      const keyName = 'TEST_SHORT_PROD_SECRET_' + Date.now();
+
+      // 10-char weak password in production
+      process.env[keyName] = 'weak_short';
+
+      assert.throws(
+        () => {
+          getSecureSecret(keyName, { minLength: 32, requiredInProd: true });
+        },
+        (err) => {
+          assert.ok(err.message.includes('[SECURITY FATAL]'));
+          assert.ok(err.message.includes('minimum length requirement (32 chars)'));
+          return true;
+        },
+      );
+
+      delete process.env[keyName];
+    });
+
+    test('Production Guardrail: Accepts strong high-entropy production secrets', () => {
+      process.env.NODE_ENV = 'production';
+      const keyName = 'JWT_SECRET_PROD_TEST_' + Date.now();
+      const strongProdSecret = crypto.randomBytes(32).toString('hex'); // 64 chars
+
+      process.env[keyName] = strongProdSecret;
+
+      const resolved = getSecureSecret(keyName, {
+        fallbackDev: 'dev_fallback_value',
+        minLength: 32,
+        requiredInProd: true,
+      });
+
+      assert.equal(resolved, strongProdSecret);
+      delete process.env[keyName];
+    });
+
+    test('Frontend Security Audit: Verifies no sensitive secrets or keys are exposed via NEXT_PUBLIC_', () => {
+      const forbiddenTerms = ['SECRET', 'PASSWORD', 'PRIVATE_KEY', 'TOKEN_HASH', 'DB_PASSWORD'];
+
+      // Check all environment keys present on process.env
+      for (const [key, value] of Object.entries(process.env)) {
+        if (key.startsWith('NEXT_PUBLIC_')) {
+          for (const term of forbiddenTerms) {
+            assert.equal(
+              key.toUpperCase().includes(term),
+              false,
+              `Found dangerous sensitive key exposed via NEXT_PUBLIC_: ${key}`,
+            );
+          }
+        }
+      }
+    });
+  });
 });

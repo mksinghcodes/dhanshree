@@ -1,4 +1,4 @@
-﻿import {
+import {
   Injectable,
   UnauthorizedException,
   ConflictException,
@@ -21,6 +21,7 @@ import { PrismaService } from '../../database/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { SendOtpRequestDto, VerifyOtpRequestDto } from './dto/otp.dto';
+import { getJwtSecret, getJwtRefreshSecret } from '../../common/config';
 
 interface OtpRecord {
   code: string;
@@ -192,7 +193,8 @@ export class AuthService {
         break;
     }
 
-    this.logger.log(`[${provider}] Dispatching OTP ${code} to ${dto.phoneNumber} for ${dto.purpose}`);
+    const logCode = process.env.NODE_ENV === 'production' ? '******' : code;
+    this.logger.log(`[${provider}] Dispatching OTP ${logCode} to ${dto.phoneNumber} for ${dto.purpose}`);
 
     return {
       status: 'SENT',
@@ -275,9 +277,7 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<AuthTokens> {
     try {
       const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
-        secret:
-          this.configService.get<string>('JWT_REFRESH_SECRET') ||
-          'super_secret_refresh_jwt_sign_key_phase1_test_abc456!',
+        secret: getJwtRefreshSecret(this.configService),
       });
 
       return this.generateTokens(payload.sub, payload.email, payload.role, payload.country, crypto.randomUUID());
@@ -302,16 +302,12 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret:
-        this.configService.get<string>('JWT_SECRET') ||
-        'super_secret_jwt_sign_key_phase1_test_xyz123!',
+      secret: getJwtSecret(this.configService),
       expiresIn: '1d',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret:
-        this.configService.get<string>('JWT_REFRESH_SECRET') ||
-        'super_secret_refresh_jwt_sign_key_phase1_test_abc456!',
+      secret: getJwtRefreshSecret(this.configService),
       expiresIn: '7d',
     });
 
