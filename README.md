@@ -1,4 +1,4 @@
-﻿# Dhanshree — World-Class Global Multi-Vendor Marketplace Platform
+# Dhanshree — World-Class Global Multi-Vendor Marketplace Platform
 > Launching in **Nepal (NP)**, **India (IN)**, and the **United Arab Emirates (Dubai - AE)**.  
 > Comparable to **Amazon**, **eBay**, **Alibaba**, and **Flipkart**.  
 > Engineered with **Next.js 14+ (App Router)**, **TypeScript**, **Tailwind CSS**, **NestJS (Modular Monolith)**, **PostgreSQL 16**, **Prisma ORM**, **Redis**, **Meilisearch**, and **BullMQ**.
@@ -10,42 +10,44 @@
 Dhanshree is structured as a resilient, multi-region modular platform capable of operating as a unified monolith or splitting horizontally into independent microservices.
 
 ```mermaid
-graph TD
-    User([Customer / Merchant / Admin]) --> Cloudflare[Cloudflare Global Edge CDN & WAF]
+flowchart TD
+    User(["Customer / Merchant / Admin"]) --> Cloudflare["Cloudflare Global Edge CDN and WAF"]
     
-    subgraph Storefront Layer [Next.js App Router (Port 3000)]
-        Cloudflare --> NP_Store[/np - Nepal Storefront (NPR, 13% VAT)/]
-        Cloudflare --> IN_Store[/in - India Storefront (INR, GST & 1% TCS)/]
-        Cloudflare --> AE_Store[/ae - UAE Storefront (AED, 5% VAT, RTL)/]
+    subgraph StorefrontLayer ["Storefront Layer (Next.js App Router - Port 3000)"]
+        Cloudflare --> NP_Store["/np - Nepal Storefront (NPR, 13% VAT)"]
+        Cloudflare --> IN_Store["/in - India Storefront (INR, GST and 1% TCS)"]
+        Cloudflare --> AE_Store["/ae - UAE Storefront (AED, 5% VAT, RTL)"]
     end
 
-    subgraph Service Layer [NestJS Modular Monolith API (Port 4000)]
-        NP_Store & IN_Store & AE_Store --> Gateway[API Gateway / Router]
-        Gateway --> AuthMod[Auth & RBAC Module (JWT / OTP)]
-        Gateway --> CatalogMod[Catalog & Faceted Search Engine]
-        Gateway --> CartMod[Cart & Inventory Reservation Module]
-        Gateway --> OrderMod[Orders & Quote Calculation Module]
-        Gateway --> PaymentMod[Pluggable Multi-Gateway Payment Engine]
-        Gateway --> SellerMod[Enterprise Seller Operations Portal]
-        Gateway --> AdminMod[Super Admin Governance & Audit Desk]
-        Gateway --> AdvancedMod[Auctions, RFQ Wholesale & AI Concierge]
-        Gateway --> LogisticsMod[Courier Webhooks & Cross-Border Duty Engine]
+    subgraph ServiceLayer ["Service Layer (NestJS Modular Monolith API - Port 4000)"]
+        NP_Store --> Gateway["API Gateway / Router"]
+        IN_Store --> Gateway
+        AE_Store --> Gateway
+        Gateway --> AuthMod["Auth and RBAC Module (JWT / OTP)"]
+        Gateway --> CatalogMod["Catalog and Faceted Search Engine"]
+        Gateway --> CartMod["Cart and Inventory Reservation Module"]
+        Gateway --> OrderMod["Orders and Quote Calculation Module"]
+        Gateway --> PaymentMod["Pluggable Multi-Gateway Payment Engine"]
+        Gateway --> SellerMod["Enterprise Seller Operations Portal"]
+        Gateway --> AdminMod["Super Admin Governance and Audit Desk"]
+        Gateway --> AdvancedMod["Auctions, RFQ Wholesale and AI Concierge"]
+        Gateway --> LogisticsMod["Courier Webhooks and Cross-Border Duty Engine"]
     end
 
-    subgraph Data & Queue Layer
-        ServiceLayer --> Postgres[(PostgreSQL 16 Multi-Tenant DB)]
-        ServiceLayer --> RedisCache[(Redis Cache & Session Store)]
-        ServiceLayer --> SearchEngine[(Meilisearch Fast Full-Text Engine)]
-        ServiceLayer --> QueueBroker[(BullMQ / RabbitMQ Background Workers)]
+    subgraph DataLayer ["Data and Queue Layer"]
+        Gateway --> Postgres[("PostgreSQL 16 Multi-Tenant DB")]
+        Gateway --> RedisCache[("Redis Cache and Session Store")]
+        Gateway --> SearchEngine[("Meilisearch Fast Full-Text Engine")]
+        Gateway --> QueueBroker[("BullMQ / RabbitMQ Background Workers")]
     end
 
-    subgraph Regional External Integrations
-        PaymentMod --> NP_Pay[eSewa / Khalti / Fonepay / ConnectIPS]
-        PaymentMod --> IN_Pay[Razorpay / UPI / NetBanking / Cashfree]
-        PaymentMod --> AE_Pay[Stripe / Apple Pay / Tabby 4-Mo BNPL]
-        LogisticsMod --> NP_Courier[Nepal CanShip & Express / Pathao]
-        LogisticsMod --> IN_Courier[Delhivery Surface / BlueDart]
-        LogisticsMod --> AE_Courier[Aramex Priority UAE / Careem Box]
+    subgraph IntegrationsLayer ["Regional External Integrations"]
+        PaymentMod --> NP_Pay["eSewa / Khalti / Fonepay / ConnectIPS"]
+        PaymentMod --> IN_Pay["Razorpay / UPI / NetBanking / Cashfree"]
+        PaymentMod --> AE_Pay["Stripe / Apple Pay / Tabby 4-Mo BNPL"]
+        LogisticsMod --> NP_Courier["Nepal CanShip and Express / Pathao"]
+        LogisticsMod --> IN_Courier["Delhivery Surface / BlueDart"]
+        LogisticsMod --> AE_Courier["Aramex Priority UAE / Careem Box"]
     end
 ```
 
