@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -61,11 +61,58 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
   const codFee = paymentMethod === PaymentMethod.COD ? (code === 'NP' ? 50 : code === 'IN' ? 49 : 15) : 0;
   const grandTotal = taxable + tax + shipping + codFee;
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const [gatewayMode, setGatewayMode] = useState<'SANDBOX' | 'SIMULATE'>('SANDBOX');
+
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const generatedOrderNumber = `ORD-2026-${code}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    if (gatewayMode === 'SANDBOX') {
+      if (paymentMethod === PaymentMethod.ESEWA) {
+        try {
+          const res = await fetch('/api/payments/esewa', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNumber: generatedOrderNumber, amount: grandTotal }),
+          });
+          const data = await res.json();
+          if (data.actionUrl && data.fields) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = data.actionUrl;
+            Object.entries(data.fields).forEach(([k, v]) => {
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = k;
+              input.value = v as string;
+              form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
+            return;
+          }
+        } catch (err) {
+          console.error('eSewa error:', err);
+        }
+      } else if (paymentMethod === PaymentMethod.KHALTI) {
+        try {
+          const res = await fetch('/api/payments/khalti', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNumber: generatedOrderNumber, amount: grandTotal }),
+          });
+          const data = await res.json();
+          if (data.paymentUrl) {
+            window.location.href = data.paymentUrl;
+            return;
+          }
+        } catch (err) {
+          console.error('Khalti error:', err);
+        }
+      }
+    }
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -250,32 +297,97 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                 </div>
               </div>
 
+              {/* GATEWAY MODE SWITCHER */}
+              <div className="mb-4 p-3 bg-blue-50/70 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+                <div>
+                  <span className="font-bold text-blue-900 block">Payment Execution Mode</span>
+                  <span className="text-[11px] text-blue-700">
+                    {gatewayMode === 'SANDBOX' ? '⚡ Real Sandbox UAT: Redirects to official test portal (eSewa / Khalti)' : '🚀 Fast Simulate: Confirms order directly without leaving app'}
+                  </span>
+                </div>
+                <div className="flex bg-white rounded-xl p-1 border border-blue-200">
+                  <button
+                    type="button"
+                    onClick={() => setGatewayMode('SANDBOX')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${gatewayMode === 'SANDBOX' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Real Sandbox
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGatewayMode('SIMULATE')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${gatewayMode === 'SIMULATE' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Fast Simulate
+                  </button>
+                </div>
+              </div>
+
               {/* REGIONAL PAYMENT METHOD CHOICES */}
               <div className="space-y-3 text-xs">
                 {/* NEPAL GATEWAYS */}
                 {code === CountryCode.NEPAL && (
                   <>
-                    <label className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${paymentMethod === PaymentMethod.ESEWA ? 'border-green-600 bg-green-50/50 shadow-sm' : 'border-slate-200'}`}>
-                      <div className="flex items-center gap-3">
-                        <input type="radio" name="payment" checked={paymentMethod === PaymentMethod.ESEWA} onChange={() => setPaymentMethod(PaymentMethod.ESEWA)} className="text-green-600" />
-                        <div>
-                          <span className="font-bold text-slate-900 block">eSewa Mobile Wallet (EPAY v2)</span>
-                          <span className="text-[11px] text-slate-500">Pay via eSewa account or eSewa linked bank</span>
+                    <div className="space-y-2">
+                      <label className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${paymentMethod === PaymentMethod.ESEWA ? 'border-green-600 bg-green-50/50 shadow-sm' : 'border-slate-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" name="payment" checked={paymentMethod === PaymentMethod.ESEWA} onChange={() => setPaymentMethod(PaymentMethod.ESEWA)} className="text-green-600" />
+                          <div>
+                            <span className="font-bold text-slate-900 block">eSewa Mobile Wallet (EPAY v2)</span>
+                            <span className="text-[11px] text-slate-500">Pay via eSewa account or eSewa linked bank</span>
+                          </div>
                         </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded bg-green-600 text-white text-[10px] font-bold">Recommended</span>
-                    </label>
+                        <span className="px-2 py-0.5 rounded bg-green-600 text-white text-[10px] font-bold">Recommended</span>
+                      </label>
+                      {paymentMethod === PaymentMethod.ESEWA && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-xl space-y-1.5 text-xs">
+                          <div className="flex items-center justify-between font-bold text-green-900">
+                            <span className="flex items-center gap-1.5">
+                              <span>🟢</span> Official eSewa UAT Gateway
+                            </span>
+                            <span className="text-[10px] bg-green-200 text-green-800 px-2 py-0.5 rounded-full font-mono">
+                              rc-epay.esewa.com.np
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-green-800">
+                            <strong>"Place Order"</strong> थिच्दा सिधै eSewa को आधिकारिक टेस्ट स्क्रिन खुल्नेछ।
+                          </p>
+                          <div className="bg-white/90 p-2 rounded-lg border border-green-200 font-mono text-[11px] text-slate-700 space-y-0.5">
+                            <div><strong>eSewa Test ID:</strong> 9806800001 वा 9806800002</div>
+                            <div><strong>Password:</strong> Nepal@123 | <strong>MPIN:</strong> 1122 | <strong>Token:</strong> 123456</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
-                    <label className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${paymentMethod === PaymentMethod.KHALTI ? 'border-purple-600 bg-purple-50/50 shadow-sm' : 'border-slate-200'}`}>
-                      <div className="flex items-center gap-3">
-                        <input type="radio" name="payment" checked={paymentMethod === PaymentMethod.KHALTI} onChange={() => setPaymentMethod(PaymentMethod.KHALTI)} className="text-purple-600" />
-                        <div>
-                          <span className="font-bold text-slate-900 block">Khalti Digital Wallet</span>
-                          <span className="text-[11px] text-slate-500">Instant e-payment via Khalti API v2</span>
+                    <div className="space-y-2">
+                      <label className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${paymentMethod === PaymentMethod.KHALTI ? 'border-purple-600 bg-purple-50/50 shadow-sm' : 'border-slate-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <input type="radio" name="payment" checked={paymentMethod === PaymentMethod.KHALTI} onChange={() => setPaymentMethod(PaymentMethod.KHALTI)} className="text-purple-600" />
+                          <div>
+                            <span className="font-bold text-slate-900 block">Khalti Digital Wallet</span>
+                            <span className="text-[11px] text-slate-500">Instant e-payment via Khalti API v2</span>
+                          </div>
                         </div>
-                      </div>
-                      <span className="text-[11px] text-purple-700 font-bold">Khalti</span>
-                    </label>
+                        <span className="text-[11px] text-purple-700 font-bold">Khalti</span>
+                      </label>
+                      {paymentMethod === PaymentMethod.KHALTI && (
+                        <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl space-y-1.5 text-xs">
+                          <div className="flex items-center justify-between font-bold text-purple-900">
+                            <span className="flex items-center gap-1.5">
+                              <span>🟣</span> Official Khalti Test Sandbox
+                            </span>
+                            <span className="text-[10px] bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-mono">
+                              test-pay.khalti.com
+                            </span>
+                          </div>
+                          <div className="bg-white/90 p-2 rounded-lg border border-purple-200 font-mono text-[11px] text-slate-700 space-y-0.5">
+                            <div><strong>Khalti Mobile:</strong> 9800000000 वा 9800000001</div>
+                            <div><strong>MPIN:</strong> 1111 | <strong>OTP:</strong> 987654</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     <label className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${paymentMethod === PaymentMethod.FONEPAY_QR ? 'border-red-600 bg-red-50/50 shadow-sm' : 'border-slate-200'}`}>
                       <div className="flex items-center gap-3">
