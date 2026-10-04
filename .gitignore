@@ -54,3 +54,7 @@ Thumbs.db
 # Binaries & Tunnels
 *.exe
 cloudflared.exe
+
+# Isolated Uploads Storage
+isolated_storage/
+uploads_storage/

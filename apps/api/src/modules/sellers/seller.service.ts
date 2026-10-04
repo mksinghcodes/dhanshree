@@ -1,4 +1,4 @@
-﻿import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import {
   CountryCode,
@@ -286,6 +286,11 @@ export class SellerService {
    * Bulk Product Upload via CSV/TSV
    */
   bulkUploadProducts(sellerId: string, csvContent: string): BulkUploadResult {
+    // 1. Content validation: Reject embedded scripts or malicious protocols
+    if (/<script|javascript:|onload=|onerror=/i.test(csvContent)) {
+      throw new BadRequestException('Security violation: CSV content contains disallowed script or HTML markup');
+    }
+
     const lines = csvContent
       .split('\n')
       .map((l) => l.trim())
@@ -293,6 +298,10 @@ export class SellerService {
 
     if (lines.length < 2) {
       throw new BadRequestException('CSV must contain a header row and at least one data row');
+    }
+
+    if (lines.length > 5001) {
+      throw new BadRequestException('CSV row limit exceeded: Maximum 5,000 product rows per bulk upload');
     }
 
     const importedProducts: SellerProductItem[] = [];
@@ -313,13 +322,19 @@ export class SellerService {
 
     for (let i = 1; i < lines.length; i++) {
       const cols = lines[i].split(',').map((c) => c.trim());
-      const sku = cols[skuIdx];
-      const title = cols[titleIdx];
+      let sku = cols[skuIdx];
+      let title = cols[titleIdx];
       const priceStr = cols[priceIdx];
       const price = parseFloat(priceStr);
       const stock = stockIdx !== -1 && cols[stockIdx] ? parseInt(cols[stockIdx], 10) : 10;
-      const category = categoryIdx !== -1 && cols[categoryIdx] ? cols[categoryIdx] : 'General';
-      const warehouse = warehouseIdx !== -1 && cols[warehouseIdx] ? cols[warehouseIdx] : 'Primary WH';
+      let category = categoryIdx !== -1 && cols[categoryIdx] ? cols[categoryIdx] : 'General';
+      let warehouse = warehouseIdx !== -1 && cols[warehouseIdx] ? cols[warehouseIdx] : 'Primary WH';
+
+      // Anti-Formula Injection (CWE-1236): Neutralize formula prefixes (=, +, -, @)
+      if (sku && /^[=+\-@\t\r]/.test(sku)) sku = `'${sku}`;
+      if (title && /^[=+\-@\t\r]/.test(title)) title = `'${title}`;
+      if (category && /^[=+\-@\t\r]/.test(category)) category = `'${category}`;
+      if (warehouse && /^[=+\-@\t\r]/.test(warehouse)) warehouse = `'${warehouse}`;
 
       if (!sku || !title || isNaN(price) || price <= 0) {
         errors.push({
