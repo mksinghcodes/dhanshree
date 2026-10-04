@@ -1,0 +1,40 @@
+{
+  "name": "dhanshree-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dhanshree - Multi-vendor e-commerce marketplace for Nepal, India, and UAE",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build:api": "npm run build --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web",
+    "prisma:generate": "npm run prisma:generate --workspace=apps/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace=apps/api",
+    "prisma:seed": "npm run prisma:seed --workspace=apps/api",
+    "seed": "npm run prisma:seed --workspace=apps/api",
+    "docker:up": "docker compose -f infra/docker-compose.yml up -d",
+    "test": "npm run test:api",
+    "test:api": "npm run test --workspace=apps/api",
+    "test:e2e": "npm run test:e2e --workspace=apps/web"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.33"
+  },
+  "dependencies": {
+    "caniuse-lite": "^1.0.30001814"
+  }
+}
