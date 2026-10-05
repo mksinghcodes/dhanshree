@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
+import { AmazonFooter } from '@/components/AmazonFooter';
 import { CountryCode, COUNTRY_CONFIGS } from '@dhanshree/shared';
 import { useAuth } from '@/context/AuthContext';
 
@@ -453,76 +454,7 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
       </main>
 
       {/* AMAZON SIGNATURE FOOTER */}
-      <footer className="mt-12 bg-[#232f3e] text-white text-xs select-none">
-        {/* Back to top bar */}
-        <button
-          onClick={scrollToTop}
-          className="w-full bg-[#37475a] hover:bg-[#485769] text-white py-3.5 text-center text-xs font-semibold cursor-pointer transition-colors block"
-        >
-          Back to top
-        </button>
-
-        {/* 4 Multi-column directory */}
-        <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h4 className="font-bold text-white text-sm mb-3">Get to Know Us</h4>
-            <ul className="space-y-2 text-slate-300 text-xs">
-              <li><Link href={`/${c}/legal`} className="hover:underline">About Dhanshree</Link></li>
-              <li><Link href={`/${c}/legal`} className="hover:underline">Careers</Link></li>
-              <li><Link href={`/${c}/legal`} className="hover:underline">Press Releases</Link></li>
-              <li><Link href={`/${c}/legal`} className="hover:underline">Dhanshree Science</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-white text-sm mb-3">Make Money with Us</h4>
-            <ul className="space-y-2 text-slate-300 text-xs">
-              <li><Link href={`/${c}/seller`} className="hover:underline text-amber-300 font-semibold">Sell products on Dhanshree (०% कमिसन)</Link></li>
-              <li><Link href={`/${c}/seller`} className="hover:underline">Sell on Dhanshree Business</Link></li>
-              <li><Link href={`/${c}/seller`} className="hover:underline">Fulfilment by Dhanshree (FBD)</Link></li>
-              <li><Link href={`/${c}/seller`} className="hover:underline">Advertise Your Products</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-white text-sm mb-3">Dhanshree Payment Products</h4>
-            <ul className="space-y-2 text-slate-300 text-xs">
-              <li><span className="text-slate-200">eSewa &amp; Khalti (Nepal)</span></li>
-              <li><span className="text-slate-200">UPI &amp; Razorpay (India)</span></li>
-              <li><span className="text-slate-200">Tabby BNPL &amp; Cards (UAE)</span></li>
-              <li><span className="text-slate-200">Cash on Delivery (COD)</span></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-white text-sm mb-3">Let Us Help You</h4>
-            <ul className="space-y-2 text-slate-300 text-xs">
-              <li><Link href={`/${c}/orders`} className="hover:underline">Your Account</Link></li>
-              <li><Link href={`/${c}/orders`} className="hover:underline">Your Orders</Link></li>
-              <li><Link href={`/${c}/shipping`} className="hover:underline">Shipping Rates &amp; Policies</Link></li>
-              <li><Link href={`/${c}/legal`} className="hover:underline">Returns &amp; Replacements</Link></li>
-              <li><Link href={`/${c}/legal`} className="hover:underline">Help &amp; Customer Care</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Bar (#131921) */}
-        <div className="border-t border-slate-700 bg-[#131921] py-8 text-center text-xs text-slate-400 space-y-3">
-          <div className="flex items-center justify-center gap-4">
-            <span className="font-bold text-lg text-white">dhanshree</span>
-            <div className="flex items-center gap-2 border border-slate-600 rounded px-3 py-1">
-              <span>🌐</span>
-              <span>English / नेपाली</span>
-            </div>
-            <div className="flex items-center gap-2 border border-slate-600 rounded px-3 py-1">
-              <span>{config.code === 'NP' ? '🇳🇵 Nepal' : config.code === 'IN' ? '🇮🇳 India' : '🇦🇪 UAE'}</span>
-            </div>
-          </div>
-          <p className="text-[11px] text-slate-500">
-            &copy; 2026, Dhanshree.com, Inc. or its affiliates &bull; Built with World-Class Amazon UX &amp; UI Architecture &bull; Dashain, Tihar &amp; Chhath Festive 2083
-          </p>
-        </div>
-      </footer>
+      <AmazonFooter countryCode={config.code} />
     </div>
   );
 }

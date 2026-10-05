@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
+import { AmazonFooter } from '@/components/AmazonFooter';
 import { COUNTRY_CONFIGS, CountryCode, CurrencyCode } from '@dhanshree/shared';
 import { useResolvedParams } from '@/lib/params';
 
@@ -559,11 +560,7 @@ export default function ProductsPage({ params }: ProductsPageProps) {
       </div>
 
       {/* Amazon Footer */}
-      <footer className="mt-12 bg-[#232f3e] text-white text-xs select-none">
-        <div className="max-w-[1200px] mx-auto px-4 py-8 text-center text-slate-400">
-          &copy; 2026, Dhanshree.com, Inc. or its affiliates &bull; Amazon-Engineered Marketplace Experience
-        </div>
-      </footer>
+      <AmazonFooter countryCode={config.code} />
     </div>
   );
 }
