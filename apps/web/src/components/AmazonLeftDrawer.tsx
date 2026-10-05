@@ -38,7 +38,7 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
                 Hello, {currentUser.shortName || 'Manoj'}
               </span>
               <span className="text-[10px] text-[#febd69] font-medium tracking-wide block">
-                Everything You Love, One Place.
+                Shop. Discover. Delight
               </span>
             </div>
           </div>

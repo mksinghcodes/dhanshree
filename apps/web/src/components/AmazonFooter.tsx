@@ -121,7 +121,7 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
               <span className="text-[8px] text-[#febd69] -ml-1 -mt-1 font-bold">▶</span>
             </div>
             <span className="text-[11px] text-[#febd69] font-medium tracking-wide mt-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-              Everything You Love, One Place.
+              Shop. Discover. Delight
             </span>
           </Link>
 
@@ -147,7 +147,7 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
         </div>
 
         <p className="text-[11px] text-slate-400 mt-4">
-          &ldquo;Everything You Love, One Place.&rdquo; &bull; &copy; 2026, Dhanshree.com, Inc. or its affiliates
+          &ldquo;Shop. Discover. Delight&rdquo; &bull; &copy; 2026, Dhanshree.com, Inc. or its affiliates
         </p>
       </div>
     </footer>

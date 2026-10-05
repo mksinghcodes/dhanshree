@@ -3,8 +3,8 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Dhanshree - Everything You Love, One Place.',
-  description: 'Dhanshree: Everything You Love, One Place. Global Multi-Vendor Marketplace for Nepal, India, and UAE - Dashain, Tihar & Chhath Festive 2026',
+  title: 'Dhanshree - Shop. Discover. Delight',
+  description: 'Dhanshree: Shop. Discover. Delight. Global Multi-Vendor Marketplace for Nepal, India, and UAE - Dashain, Tihar & Chhath Festive 2026',
 };
 
 export default function RootLayout({

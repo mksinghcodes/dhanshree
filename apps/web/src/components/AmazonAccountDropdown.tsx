@@ -267,7 +267,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
               Dhanshree
             </span>
             <span className="italic text-slate-400">
-              &ldquo;Everything You Love, One Place.&rdquo;
+              &ldquo;Shop. Discover. Delight&rdquo;
             </span>
           </div>
         </div>

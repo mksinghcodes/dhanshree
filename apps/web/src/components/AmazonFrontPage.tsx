@@ -250,7 +250,7 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
             <span className="text-[#febd69] font-black text-sm lowercase">dhanshree</span>
             <span className="text-slate-400 hidden sm:inline">&bull;</span>
             <span className="text-amber-300 font-semibold text-xs tracking-wide">
-              &ldquo;Everything You Love, One Place.&rdquo;
+              &ldquo;Shop. Discover. Delight&rdquo;
             </span>
           </div>
           <div className="text-[11px] text-slate-300 hidden md:flex items-center gap-3">
