@@ -36,6 +36,7 @@
     "@next/swc-win32-x64-msvc": "^14.2.33"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "caniuse-lite": "^1.0.30001814",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
