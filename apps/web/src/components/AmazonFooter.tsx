@@ -111,8 +111,8 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
       {/* 3. Bottom Brand & Preferences Line Bar (Exact match of media_1791212768555.png) */}
       <div className="border-t border-[#3a4553] bg-[#131921] py-8 text-center text-xs text-[#cccccc]">
         <div className="max-w-[1020px] mx-auto px-4 flex flex-wrap items-center justify-center gap-6">
-          {/* Dhanshree logo with curved smile */}
-          <Link href={`/${c}`} className="flex flex-col items-center">
+          {/* Dhanshree logo with curved smile and official tagline */}
+          <Link href={`/${c}`} className="flex flex-col items-center group">
             <span className="text-2xl font-black tracking-tighter text-white lowercase">
               dhanshree
             </span>
@@ -120,6 +120,9 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
               <div className="w-full h-[2.5px] bg-[#febd69] rounded-full transform -rotate-1" />
               <span className="text-[8px] text-[#febd69] -ml-1 -mt-1 font-bold">▶</span>
             </div>
+            <span className="text-[11px] text-[#febd69] font-medium tracking-wide mt-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+              Everything You Love, One Place.
+            </span>
           </Link>
 
           {/* 3 Pill Selector Buttons (Matching media_1791212768555.png) */}
@@ -143,8 +146,8 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-500 mt-4">
-          &copy; 2026, Dhanshree.com, Inc. or its affiliates &bull; Global Multi-Vendor Marketplace
+        <p className="text-[11px] text-slate-400 mt-4">
+          &ldquo;Everything You Love, One Place.&rdquo; &bull; &copy; 2026, Dhanshree.com, Inc. or its affiliates
         </p>
       </div>
     </footer>

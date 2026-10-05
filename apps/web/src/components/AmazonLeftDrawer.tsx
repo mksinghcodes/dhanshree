@@ -33,9 +33,14 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
             <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">
               👤
             </span>
-            <span className="text-lg font-bold tracking-tight">
-              Hello, {currentUser.shortName || 'Manoj'}
-            </span>
+            <div>
+              <span className="text-lg font-bold tracking-tight block">
+                Hello, {currentUser.shortName || 'Manoj'}
+              </span>
+              <span className="text-[10px] text-[#febd69] font-medium tracking-wide block">
+                Everything You Love, One Place.
+              </span>
+            </div>
           </div>
 
           {/* Close button */}

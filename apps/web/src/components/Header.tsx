@@ -64,6 +64,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
           {/* Amazon-Style Logo */}
           <Link
             href={`/${c}`}
+            title="Dhanshree - Everything You Love, One Place."
             className="flex items-center gap-1 px-2 py-1 rounded-sm border border-transparent hover:border-white transition-all group shrink-0"
           >
             <div className="flex flex-col">
@@ -272,6 +273,9 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
 
           {/* Right Sub-nav Highlights */}
           <div className="flex items-center gap-3 whitespace-nowrap text-[11px] font-bold">
+            <span className="text-[#febd69] hidden xl:inline font-medium tracking-wide">
+              &ldquo;Everything You Love, One Place.&rdquo;
+            </span>
             <span className="text-amber-300 hidden lg:inline">
               🏮 दशैँ, तिहार तथा छठ २०८३
             </span>

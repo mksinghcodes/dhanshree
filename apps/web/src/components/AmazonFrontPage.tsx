@@ -244,6 +244,21 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
           </div>
         </div>
 
+        {/* Brand Tagline Welcome Ribbon */}
+        <div className="bg-gradient-to-r from-[#131921] via-[#1a232f] to-[#232f3e] text-white rounded-xl px-4 py-2.5 flex items-center justify-between text-xs shadow-xs border border-slate-700/50">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[#febd69] font-black text-sm lowercase">dhanshree</span>
+            <span className="text-slate-400 hidden sm:inline">&bull;</span>
+            <span className="text-amber-300 font-semibold text-xs tracking-wide">
+              &ldquo;Everything You Love, One Place.&rdquo;
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-300 hidden md:flex items-center gap-3">
+            <span>🇳🇵 नेपाल &bull; 🇮🇳 भारत &bull; 🇦🇪 UAE</span>
+            <span className="text-amber-300 font-semibold">दशैँ, तिहार तथा छठ २०८३ महोत्सव</span>
+          </div>
+        </div>
+
         {/* SECTION 1: AMAZON EXACT TALL LIFESTYLE CATEGORY CARDS (TOP ROW FROM SCREENSHOT) */}
         <section id="amazon-category-strip" className="relative group">
           <div

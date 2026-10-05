@@ -260,6 +260,16 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
               </ul>
             </div>
           </div>
+
+          {/* Dropdown Footer Tagline */}
+          <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span className="font-semibold text-amber-700">
+              Dhanshree
+            </span>
+            <span className="italic text-slate-400">
+              &ldquo;Everything You Love, One Place.&rdquo;
+            </span>
+          </div>
         </div>
       )}
 
