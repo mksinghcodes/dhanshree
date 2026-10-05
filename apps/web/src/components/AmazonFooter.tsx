@@ -53,10 +53,10 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
           <ul className="space-y-2 text-[#dddddd] text-xs">
             <li><Link href={`/${c}/legal`} className="hover:underline">Careers</Link></li>
             <li><Link href={`/${c}/legal`} className="hover:underline">Blog</Link></li>
-            <li><Link href={`/${c}/legal`} className="hover:underline">About Amazon</Link></li>
+            <li><Link href={`/${c}/legal`} className="hover:underline">About Dhanshree</Link></li>
             <li><Link href={`/${c}/legal`} className="hover:underline">Investor Relations</Link></li>
-            <li><Link href={`/${c}/products?cat=Electronics`} className="hover:underline">Amazon Devices</Link></li>
-            <li><Link href={`/${c}/legal`} className="hover:underline">Amazon Science</Link></li>
+            <li><Link href={`/${c}/products?cat=Electronics`} className="hover:underline">Dhanshree Devices</Link></li>
+            <li><Link href={`/${c}/legal`} className="hover:underline">Dhanshree Science</Link></li>
           </ul>
         </div>
 
@@ -66,15 +66,15 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
           <ul className="space-y-2 text-[#dddddd] text-xs">
             <li>
               <Link href={`/${c}/seller`} className="hover:underline text-amber-300 font-semibold">
-                Sell products on Amazon (०% कमिसन)
+                Sell products on Dhanshree (०% कमिसन)
               </Link>
             </li>
-            <li><Link href={`/${c}/seller`} className="hover:underline">Sell on Amazon Business</Link></li>
-            <li><Link href={`/${c}/seller`} className="hover:underline">Sell apps on Amazon</Link></li>
+            <li><Link href={`/${c}/seller`} className="hover:underline">Sell on Dhanshree Business</Link></li>
+            <li><Link href={`/${c}/seller`} className="hover:underline">Sell apps on Dhanshree</Link></li>
             <li><Link href={`/${c}/seller`} className="hover:underline">Become an Affiliate</Link></li>
             <li><Link href={`/${c}/seller`} className="hover:underline">Advertise Your Products</Link></li>
             <li><Link href={`/${c}/seller`} className="hover:underline">Self-Publish with Us</Link></li>
-            <li><Link href={`/${c}/seller`} className="hover:underline">Host an Amazon Hub</Link></li>
+            <li><Link href={`/${c}/seller`} className="hover:underline">Host a Dhanshree Hub</Link></li>
             <li>
               <Link href={`/${c}/seller`} className="hover:underline flex items-center gap-1 font-semibold text-slate-300">
                 <span>›</span> See More Make Money with Us
@@ -83,14 +83,14 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
           </ul>
         </div>
 
-        {/* Column 3: Amazon Payment Products */}
+        {/* Column 3: Dhanshree Payment Products */}
         <div>
-          <h4 className="font-bold text-white text-sm mb-3">Amazon Payment Products</h4>
+          <h4 className="font-bold text-white text-sm mb-3">Dhanshree Payment Products</h4>
           <ul className="space-y-2 text-[#dddddd] text-xs">
-            <li><Link href={`/${c}/membership`} className="hover:underline">Amazon Business Card</Link></li>
+            <li><Link href={`/${c}/membership`} className="hover:underline">Dhanshree Business Card</Link></li>
             <li><Link href={`/${c}/membership`} className="hover:underline">Shop with Points</Link></li>
             <li><Link href={`/${c}/orders`} className="hover:underline">Reload Your Balance</Link></li>
-            <li><Link href={`/${c}/legal`} className="hover:underline">Amazon Currency Converter</Link></li>
+            <li><Link href={`/${c}/legal`} className="hover:underline">Dhanshree Currency Converter</Link></li>
           </ul>
         </div>
 
@@ -111,12 +111,12 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
       {/* 3. Bottom Brand & Preferences Line Bar (Exact match of media_1791212768555.png) */}
       <div className="border-t border-[#3a4553] bg-[#131921] py-8 text-center text-xs text-[#cccccc]">
         <div className="max-w-[1020px] mx-auto px-4 flex flex-wrap items-center justify-center gap-6">
-          {/* Amazon logo with curved smile */}
+          {/* Dhanshree logo with curved smile */}
           <Link href={`/${c}`} className="flex flex-col items-center">
             <span className="text-2xl font-black tracking-tighter text-white lowercase">
-              amazon
+              dhanshree
             </span>
-            <div className="relative -mt-1 w-16 h-1 flex items-center">
+            <div className="relative -mt-1 w-20 h-1 flex items-center">
               <div className="w-full h-[2.5px] bg-[#febd69] rounded-full transform -rotate-1" />
               <span className="text-[8px] text-[#febd69] -ml-1 -mt-1 font-bold">▶</span>
             </div>
@@ -144,7 +144,7 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
         </div>
 
         <p className="text-[11px] text-slate-500 mt-4">
-          &copy; 1996-2026, Amazon.com, Inc. or its affiliates &bull; Dhanshree Global Multi-Vendor Engine
+          &copy; 2026, Dhanshree.com, Inc. or its affiliates &bull; Global Multi-Vendor Marketplace
         </p>
       </div>
     </footer>

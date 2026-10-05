@@ -112,7 +112,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Amazon style Dhanshree (e.g. computer, laptop, audio)..."
+              placeholder="Search Dhanshree (e.g. computer, laptop, audio, fashion)..."
               className="flex-1 h-full px-3 text-sm text-[#0f1111] placeholder:text-slate-500 outline-none"
             />
 
@@ -217,7 +217,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
               href={`/${c}/orders`}
               className="px-2 py-1.5 rounded-sm border border-transparent hover:border-white text-slate-200 hover:text-white transition-colors hidden sm:inline"
             >
-              {currentUser.shortName}&apos;s Amazon.com
+              {currentUser.shortName}&apos;s Dhanshree
             </Link>
 
             <Link

@@ -68,7 +68,7 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
               onClick={onClose}
               className="flex items-center justify-between py-2 text-slate-700 hover:bg-slate-100 -mx-3 px-3 rounded transition-colors"
             >
-              <span>Amazon Music</span>
+              <span>Dhanshree Music</span>
               <span className="text-slate-400 font-bold text-base">›</span>
             </Link>
             <Link
@@ -84,7 +84,7 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
               onClick={onClose}
               className="flex items-center justify-between py-2 text-slate-700 hover:bg-slate-100 -mx-3 px-3 rounded transition-colors"
             >
-              <span>Amazon Appstore</span>
+              <span>Dhanshree Appstore</span>
               <span className="text-slate-400 font-bold text-base">›</span>
             </Link>
           </div>
@@ -199,7 +199,7 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
               onClick={onClose}
               className="flex items-center justify-between py-2 text-slate-700 hover:bg-slate-100 -mx-3 px-3 rounded transition-colors"
             >
-              <span>Amazon Live &amp; Auctions</span>
+              <span>Dhanshree Live &amp; Auctions</span>
               <span className="text-slate-400 font-bold text-base">›</span>
             </Link>
             <Link
