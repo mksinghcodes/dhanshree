@@ -36,11 +36,11 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
       : '🇺🇸 United States';
 
   return (
-    <footer className="mt-12 bg-[#232f3e] text-white text-xs select-none font-sans">
-      {/* 1. Back to Top Bar (Matching media_1791212768555.png) */}
+    <footer className="mt-12 bg-[#0d1b2a] text-white text-xs select-none font-sans">
+      {/* 1. Back to Top Bar (Royal Navy Accent) */}
       <button
         onClick={scrollToTop}
-        className="w-full bg-[#37475a] hover:bg-[#485769] text-white py-3.5 text-center text-[13px] font-medium cursor-pointer transition-colors block border-none outline-none"
+        className="w-full bg-[#162a45] hover:bg-[#1f375b] text-white py-3.5 text-center text-[13px] font-medium cursor-pointer transition-colors block border-none outline-none"
       >
         Back to top
       </button>
@@ -108,8 +108,8 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
         </div>
       </div>
 
-      {/* 3. Bottom Brand & Preferences Line Bar (Exact match of media_1791212768555.png) */}
-      <div className="border-t border-[#3a4553] bg-[#131921] py-8 text-center text-xs text-[#cccccc]">
+      {/* 3. Bottom Brand & Preferences Line Bar (Royal Navy Base) */}
+      <div className="border-t border-[#1e3452] bg-[#07111e] py-8 text-center text-xs text-[#cccccc]">
         <div className="max-w-[1020px] mx-auto px-4 flex flex-wrap items-center justify-center gap-6">
           {/* Dhanshree logo with curved smile and official tagline */}
           <Link href={`/${c}`} className="flex flex-col items-center group">

@@ -27,8 +27,8 @@ export function AmazonLeftDrawer({ isOpen, onClose, countryCode }: AmazonLeftDra
 
       {/* Slide-out Drawer Panel */}
       <div className="relative w-full max-w-[365px] bg-white h-full shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-200">
-        {/* Top Header: "👤 Hello, Manoj" (Matching Image 1) */}
-        <div className="bg-[#232f3e] text-white px-7 py-3.5 flex items-center justify-between shrink-0">
+        {/* Top Header: "👤 Hello, Manoj" (Royal Navy Blue) */}
+        <div className="bg-[#0d1b2a] text-white px-7 py-3.5 flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center gap-3">
             <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">
               👤

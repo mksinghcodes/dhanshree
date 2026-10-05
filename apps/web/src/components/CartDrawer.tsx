@@ -95,7 +95,7 @@ export function CartDrawer({ countryCode = CountryCode.NEPAL }: CartDrawerProps)
         className="relative px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
       >
         <span>🛒 कार्ट</span>
-        <span className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-bold">
+        <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">
           {items.reduce((sum, i) => sum + i.quantity, 0)}
         </span>
       </button>
@@ -269,7 +269,7 @@ export function CartDrawer({ countryCode = CountryCode.NEPAL }: CartDrawerProps)
                 <Link
                   href={`/${countryCode.toLowerCase()}/checkout`}
                   onClick={() => setIsOpen(false)}
-                  className="w-full py-3 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold rounded-xl shadow-md shadow-red-600/20 text-center block transition-all text-xs"
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-700/20 text-center block transition-all text-xs active:scale-[0.98]"
                 >
                   सुरक्षित भुक्तानी (Proceed to Checkout) &rarr;
                 </Link>

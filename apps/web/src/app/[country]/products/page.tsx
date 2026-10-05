@@ -545,7 +545,7 @@ export default function ProductsPage({ params }: ProductsPageProps) {
                         </Link>
                         <button
                           onClick={() => handleAddToCart(product.title)}
-                          className="px-4 py-1.5 rounded-full bg-[#ffd814] hover:bg-[#f7ca00] text-slate-900 text-xs font-bold shadow-xs active:scale-95 transition-all"
+                          className="px-4 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
                         >
                           Add to Cart
                         </button>

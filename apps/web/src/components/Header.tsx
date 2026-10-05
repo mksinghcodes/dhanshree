@@ -59,8 +59,8 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-40 w-full select-none font-sans">
-        {/* 1. Amazon Top Main Navigation Bar (#131921) */}
-        <div className="bg-[#131921] text-white px-2 sm:px-4 py-1.5 flex items-center justify-between gap-2 sm:gap-4 h-[60px]">
+        {/* 1. Dhanshree Royal Navy Main Navigation Bar (#0d1b2a) */}
+        <div className="bg-[#0d1b2a] text-white px-2 sm:px-4 py-1.5 flex items-center justify-between gap-2 sm:gap-4 h-[60px] shadow-sm">
           {/* Amazon-Style Logo */}
           <Link
             href={`/${c}`}
@@ -189,8 +189,8 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
           </div>
         </div>
 
-        {/* 2. Amazon Sub-Navbar (#232f3e) */}
-        <div className="bg-[#232f3e] text-white px-2 sm:px-4 text-xs h-[39px] flex items-center justify-between overflow-x-auto scrollbar-none font-medium">
+        {/* 2. Dhanshree Royal Navy Sub-Navbar (#162a45) */}
+        <div className="bg-[#162a45] text-white px-2 sm:px-4 text-xs h-[39px] flex items-center justify-between overflow-x-auto scrollbar-none font-medium border-t border-[#1e3452]">
           <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
             {/* Hamburger "☰ All" opens Amazon Left Drawer (Images 1 & 2) */}
             <button

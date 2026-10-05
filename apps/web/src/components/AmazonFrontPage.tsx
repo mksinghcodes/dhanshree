@@ -202,18 +202,18 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
   };
 
   return (
-    <div className="min-h-screen bg-[#eaeded] text-[#0f1111] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#f6f8fa] text-[#0f1111] font-sans flex flex-col">
       <Header currentCountry={countryCode} />
 
       {/* Floating Action Toast */}
       {activeToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#131921] text-white px-5 py-3 rounded-lg shadow-2xl border border-slate-700 flex items-center gap-2 text-xs font-bold animate-in slide-in-from-bottom-5">
-          <span>✓</span>
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0d1b2a] text-white px-5 py-3 rounded-lg shadow-2xl border border-emerald-500/40 flex items-center gap-2 text-xs font-bold animate-in slide-in-from-bottom-5">
+          <span className="text-emerald-400">✓</span>
           <span>{activeToast}</span>
         </div>
       )}
 
-      {/* Main Amazon Layout Area */}
+      {/* Main Dhanshree Layout Area */}
       <main className="flex-1 max-w-[1500px] mx-auto w-full px-2 sm:px-4 py-4 space-y-5">
         {/* Mock Testing Quick Banner for Tester Convenience */}
         <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
@@ -237,15 +237,15 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
             </Link>
             <Link
               href={`/${c}/admin`}
-              className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-md transition-colors"
+              className="px-3 py-1 bg-[#0d1b2a] hover:bg-[#162a45] text-white font-bold rounded-md transition-colors"
             >
               🛡️ सुपर एडमिन
             </Link>
           </div>
         </div>
 
-        {/* Brand Tagline Welcome Ribbon */}
-        <div className="bg-gradient-to-r from-[#131921] via-[#1a232f] to-[#232f3e] text-white rounded-xl px-4 py-2.5 flex items-center justify-between text-xs shadow-xs border border-slate-700/50">
+        {/* Brand Tagline Welcome Ribbon (Royal Navy & Warm Gold) */}
+        <div className="bg-gradient-to-r from-[#0d1b2a] via-[#162a45] to-[#0d1b2a] text-white rounded-xl px-4 py-2.5 flex items-center justify-between text-xs shadow-xs border border-[#1e3452]">
           <div className="flex items-center gap-2.5">
             <span className="text-[#febd69] font-black text-sm lowercase">dhanshree</span>
             <span className="text-slate-400 hidden sm:inline">&bull;</span>
@@ -372,13 +372,13 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
               <h2 className="text-xl font-bold text-[#0f1111]">
                 Today&apos;s Deals: दशैँ, तिहार तथा छठ महाबचत अफर
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[11px] font-black uppercase">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white text-[11px] font-black uppercase shadow-xs">
                 Up to 60% Off
               </span>
             </div>
             <Link
               href={`/${c}/products`}
-              className="text-xs sm:text-[13px] text-[#007185] hover:text-[#c7511f] hover:underline font-medium"
+              className="text-xs sm:text-[13px] text-emerald-800 hover:text-emerald-900 hover:underline font-semibold"
             >
               See all festive deals &rarr;
             </Link>
@@ -388,7 +388,7 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
             {todaysDeals.map((deal) => (
               <div
                 key={deal.id}
-                className="bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between group"
+                className="bg-white p-3 rounded-lg border border-slate-200/70 hover:border-emerald-500/50 hover:shadow-md transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="relative aspect-square rounded-md overflow-hidden bg-slate-50 mb-2">
@@ -397,18 +397,18 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
                       alt={deal.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <span className="absolute top-2 left-2 bg-[#cc0c39] text-white text-[10px] font-black px-2 py-0.5 rounded-sm">
+                    <span className="absolute top-2 left-2 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm shadow-xs">
                       {deal.discount}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] font-bold text-[#cc0c39] uppercase">
+                    <span className="text-[10px] font-bold text-emerald-700 uppercase">
                       {deal.dealBadge}
                     </span>
                   </div>
 
-                  <h3 className="text-xs font-semibold text-[#0f1111] line-clamp-2 leading-snug group-hover:text-[#007185]">
+                  <h3 className="text-xs font-semibold text-[#0f1111] line-clamp-2 leading-snug group-hover:text-emerald-800">
                     {deal.title}
                   </h3>
                 </div>
@@ -425,9 +425,9 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
 
                   <button
                     onClick={() => handleQuickAdd(deal.title)}
-                    className="px-2.5 py-1.5 bg-[#ffd814] hover:bg-[#f7ca00] text-slate-900 text-xs font-bold rounded-full shadow-xs active:scale-95 transition-all"
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-full shadow-xs active:scale-95 transition-all flex items-center gap-1"
                   >
-                    Add
+                    <span>+</span> Add
                   </button>
                 </div>
               </div>
@@ -435,8 +435,8 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
           </div>
         </section>
 
-        {/* SECTION 4: MERCHANT FESTIVE HIGHLIGHT BANNER */}
-        <section className="bg-gradient-to-r from-[#232f3e] to-[#131921] rounded-xl p-6 text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* SECTION 4: MERCHANT FESTIVE HIGHLIGHT BANNER (Royal Navy) */}
+        <section className="bg-gradient-to-r from-[#162a45] via-[#0d1b2a] to-[#162a45] rounded-xl p-6 text-white shadow-md border border-[#1e3452] flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-amber-400/20 flex items-center justify-center text-3xl">
               🏪
