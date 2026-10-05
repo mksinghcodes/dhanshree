@@ -7,6 +7,7 @@ export interface MockUser {
   id: string;
   name: string;
   nameNepali: string;
+  shortName: string;
   email: string;
   role: UserRole | 'LOGISTICS';
   roleLabel: string;
@@ -23,10 +24,26 @@ export interface MockUser {
 
 export const MOCK_PERSONAS: MockUser[] = [
   {
+    id: 'usr-manoj-01',
+    name: 'Manoj Kumar Singh',
+    nameNepali: 'मनोज कुमार सिंह',
+    shortName: 'Manoj',
+    email: 'mdsinghnp@gmail.com',
+    role: UserRole.ADMIN,
+    roleLabel: 'Super Admin & Account Owner',
+    roleLabelNepali: 'खाताधनी / सुपर एडमिन',
+    country: CountryCode.NEPAL,
+    avatar: '👤',
+    badge: 'Verified Primary Account 🛡️',
+    balanceFormatted: 'रु ४८,९०,००० (Platform Escrow Pool)',
+    description: 'Account holder of mdsinghnp@gmail.com with complete marketplace and management access.',
+  },
+  {
     id: 'usr-buyer-01',
     name: 'Sita Sharma',
     nameNepali: 'सीता शर्मा',
-    email: 'buyer@dhanshree.com',
+    shortName: 'Sita',
+    email: 'sita.sharma@dhanshree.com',
     role: UserRole.BUYER,
     roleLabel: 'Consumer / Buyer',
     roleLabelNepali: 'ग्राहक / उपभोक्ता',
@@ -40,6 +57,7 @@ export const MOCK_PERSONAS: MockUser[] = [
     id: 'usr-seller-01',
     name: 'Rajesh Shrestha',
     nameNepali: 'राजेश श्रेष्ठ',
+    shortName: 'Rajesh',
     email: 'seller@dhanshree.com',
     role: UserRole.SELLER,
     roleLabel: 'Verified Merchant / Vendor',
@@ -54,23 +72,10 @@ export const MOCK_PERSONAS: MockUser[] = [
     expressPayoutEnabled: true,
   },
   {
-    id: 'usr-admin-01',
-    name: 'Er. Manoj Singh',
-    nameNepali: 'मनोज सिंह',
-    email: 'admin@dhanshree.com',
-    role: UserRole.ADMIN,
-    roleLabel: 'Super Admin & Compliance',
-    roleLabelNepali: 'सुपर एडमिन / नियामक',
-    country: CountryCode.NEPAL,
-    avatar: '🛡️',
-    badge: 'Super Admin (Full Governance) 🛡️',
-    balanceFormatted: 'रु ४८,९०,००० (Platform Escrow Pool)',
-    description: 'System-wide compliance manager, escrow dispute arbitrator, and festival campaign auditor.',
-  },
-  {
     id: 'usr-logistics-01',
     name: 'Bikash Thapa',
     nameNepali: 'विकास थापा',
+    shortName: 'Bikash',
     email: 'logistics@dhanshree.com',
     role: 'LOGISTICS',
     roleLabel: 'Courier & Fleet Dispatcher',
@@ -93,7 +98,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'dhanshree_mock_persona_v1';
+const STORAGE_KEY = 'dhanshree_mock_persona_v2';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<MockUser>(MOCK_PERSONAS[0]);
@@ -129,10 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginCustom = (custom: Partial<MockUser>) => {
+    const nameStr = custom.name || 'Custom User';
     const newUser: MockUser = {
       id: `usr-custom-${Date.now()}`,
-      name: custom.name || 'Custom User',
-      nameNepali: custom.nameNepali || custom.name || 'कस्टम प्रयोगकर्ता',
+      name: nameStr,
+      nameNepali: custom.nameNepali || nameStr,
+      shortName: nameStr.split(' ')[0],
       email: custom.email || `user-${Date.now()}@dhanshree.com`,
       role: custom.role || UserRole.BUYER,
       roleLabel: custom.roleLabel || 'Custom Role',
@@ -151,7 +158,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    // Reset to default buyer
     const defaultUser = MOCK_PERSONAS[0];
     setCurrentUser(defaultUser);
     try {
