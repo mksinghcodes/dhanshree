@@ -250,7 +250,20 @@ export function DhanshreeFrontPage({ countryCode = CountryCode.NEPAL }: Dhanshre
     }
   };
 
-  const handleQuickAdd = (title: string) => {
+  const handleQuickAdd = (title: string, price = 1200, img = '') => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('dhanshree:add-to-cart', {
+          detail: {
+            id: `quick-${Date.now()}`,
+            title,
+            price,
+            image: img || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300',
+            quantity: 1,
+          },
+        })
+      );
+    }
     setActiveToast(`कार्टमा थपियो: ${title}`);
     setTimeout(() => setActiveToast(null), 3000);
   };
@@ -536,8 +549,8 @@ export function DhanshreeFrontPage({ countryCode = CountryCode.NEPAL }: Dhanshre
                   </div>
 
                   <button
-                    onClick={() => handleQuickAdd(deal.title)}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-full shadow-xs active:scale-95 transition-all flex items-center gap-1"
+                    onClick={() => handleQuickAdd(deal.title, deal.price, deal.img)}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-full shadow-xs active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
                   >
                     <span>+</span> Add
                   </button>

@@ -7,9 +7,9 @@ import { CartDrawer } from './CartDrawer';
 import { AiShoppingAssistant } from './AiShoppingAssistant';
 import { CountryCode } from '@dhanshree/shared';
 import { useAuth } from '@/context/AuthContext';
-import { AmazonLeftDrawer } from './AmazonLeftDrawer';
-import { AmazonCategoryDropdown } from './AmazonCategoryDropdown';
-import { AmazonAccountDropdown } from './AmazonAccountDropdown';
+import { DhanshreeLeftDrawer } from './DhanshreeLeftDrawer';
+import { DhanshreeCategoryDropdown } from './DhanshreeCategoryDropdown';
+import { DhanshreeAccountDropdown } from './DhanshreeAccountDropdown';
 import { MobileBottomNav } from './MobileBottomNav';
 import { DhanshreeLogo } from './DhanshreeLogo';
 
@@ -157,10 +157,10 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
           <div ref={searchContainerRef} className="relative flex-1 max-w-3xl">
             <form
               onSubmit={handleSearchSubmit}
-              className="flex items-center h-[40px] rounded-md overflow-visible bg-white focus-within:ring-2 focus-within:ring-[#febd69]"
+              className="flex items-center h-[42px] rounded-xl overflow-hidden bg-white focus-within:ring-2 focus-within:ring-[#febd69] shadow-xs"
             >
-              {/* Category Dropdown */}
-              <AmazonCategoryDropdown
+              {/* Category Dropdown with Slightly Curved Left Corner */}
+              <DhanshreeCategoryDropdown
                 selectedCategory={selectedCategory}
                 onSelectCategory={(cat) => setSelectedCategory(cat)}
               />
@@ -175,11 +175,11 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
                 className="flex-1 h-full px-3 text-sm text-[#0f1111] placeholder:text-slate-500 outline-none"
               />
 
-              {/* Amber Search Button */}
+              {/* Amber Search Button with Slightly Curved Right Corner */}
               <button
                 type="submit"
                 aria-label="Search"
-                className="h-full px-4 bg-[#febd69] hover:bg-[#f3a847] text-[#131921] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                className="h-full px-4 bg-[#febd69] hover:bg-[#f3a847] text-[#131921] flex items-center justify-center transition-colors cursor-pointer shrink-0 rounded-r-xl"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +193,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
 
             {/* Trending & Auto-suggest Popover on Focus */}
             {isSearchFocused && (
-              <div className="absolute top-[44px] left-0 right-0 bg-white rounded-md shadow-2xl border border-slate-200 text-slate-800 z-50 p-3 text-xs animate-in fade-in duration-150">
+              <div className="absolute top-[46px] left-0 right-0 bg-white rounded-xl shadow-2xl border border-slate-200 text-slate-800 z-50 p-3.5 text-xs animate-in fade-in duration-150">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
                   <span className="font-bold text-[11px] text-slate-500 uppercase tracking-wider flex items-center gap-1">
                     🔥 Trending on Dhanshree
@@ -274,7 +274,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
           </Link>
 
           {/* Account & Lists Dropdown */}
-          <AmazonAccountDropdown countryCode={currentCountry} />
+          <DhanshreeAccountDropdown countryCode={currentCountry} />
 
           {/* Returns & Orders */}
           <Link
@@ -373,9 +373,9 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
       </header>
 
       {/* ========================================================================= */}
-      {/* 4. AMAZON-STYLE FLYOUT / MEGA MENU DRAWER                                 */}
+      {/* 4. DHANSHREE FLYOUT / MEGA MENU DRAWER                                    */}
       {/* ========================================================================= */}
-      <AmazonLeftDrawer
+      <DhanshreeLeftDrawer
         isOpen={isLeftDrawerOpen}
         onClose={() => setIsLeftDrawerOpen(false)}
         countryCode={currentCountry}

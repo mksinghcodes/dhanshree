@@ -59,6 +59,19 @@ export function VastuProductCard({
     e.preventDefault();
     e.stopPropagation();
     setIsAdding(true);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('dhanshree:add-to-cart', {
+          detail: {
+            id,
+            title,
+            price: vastuInfo.vastuPrice,
+            image: imageUrl,
+            quantity: 1,
+          },
+        })
+      );
+    }
     if (onAddToCart) {
       onAddToCart(id);
     }
@@ -68,8 +81,23 @@ export function VastuProductCard({
   const handleBuy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('dhanshree:add-to-cart', {
+          detail: {
+            id,
+            title,
+            price: vastuInfo.vastuPrice,
+            image: imageUrl,
+            quantity: 1,
+          },
+        })
+      );
+    }
     if (onInstantBuy) {
       onInstantBuy(id);
+    } else if (typeof window !== 'undefined') {
+      window.location.href = `/${c}/checkout`;
     }
   };
 

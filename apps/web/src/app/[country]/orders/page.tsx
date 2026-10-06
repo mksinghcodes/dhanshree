@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
-import { AmazonFooter } from '@/components/AmazonFooter';
+import { DhanshreeFooter } from '@/components/DhanshreeFooter';
 import { CountryCode, COUNTRY_CONFIGS } from '@dhanshree/shared';
 import { useResolvedParams } from '@/lib/params';
 import { useAuth } from '@/context/AuthContext';
@@ -347,8 +347,8 @@ export default function OrdersPage({ params }: OrdersPageProps) {
         </div>
       </main>
 
-      {/* Amazon Footer */}
-      <AmazonFooter countryCode={config.code} />
+      {/* Dhanshree Footer */}
+      <DhanshreeFooter countryCode={config.code} />
     </div>
   );
 }

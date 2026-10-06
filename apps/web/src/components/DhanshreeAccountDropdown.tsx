@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from './AuthModal';
 
-interface AmazonAccountDropdownProps {
+export interface DhanshreeAccountDropdownProps {
   countryCode: string;
 }
 
-export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProps) {
+export function DhanshreeAccountDropdown({ countryCode }: DhanshreeAccountDropdownProps) {
   const { currentUser, availableUsers, switchUser, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showSwitchModal, setShowSwitchModal] = useState(false);
@@ -28,7 +28,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
 
   return (
     <div className="relative shrink-0 select-none" ref={dropdownRef}>
-      {/* Navbar Trigger Button matching Image 4 */}
+      {/* Navbar Trigger Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -36,7 +36,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
         aria-label="Account and Lists Menu"
       >
         <span className="text-[11px] text-[#cccccc] leading-tight">
-          Hello, {currentUser.shortName || 'Manoj'}
+          Hello, {currentUser?.shortName || 'Manoj'}
         </span>
         <span className="text-[13px] text-white font-bold leading-tight flex items-center gap-1">
           Account &amp; Lists
@@ -44,10 +44,10 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
         </span>
       </button>
 
-      {/* Dropdown Menu Modal (Exact match of Image 4) */}
+      {/* Dropdown Menu Modal */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1.5 w-[420px] bg-white rounded-lg shadow-2xl border border-slate-300 text-slate-800 z-50 p-4 text-xs animate-in fade-in">
-          {/* Top User Account Card (Matching Image 4) */}
+        <div className="absolute right-0 top-full mt-1.5 w-[420px] bg-white rounded-xl shadow-2xl border border-slate-300 text-slate-800 z-50 p-4 text-xs animate-in fade-in">
+          {/* Top User Account Card */}
           <div className="bg-[#ebf8fa] border border-[#c4e8ee] rounded-xl p-3.5 mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xl font-bold">
@@ -55,10 +55,10 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
               </div>
               <div>
                 <h4 className="font-extrabold text-[13px] text-slate-900 leading-tight">
-                  {currentUser.name}
+                  {currentUser?.name || 'Manoj Kumar Singh'}
                 </h4>
                 <p className="text-[11px] text-slate-500 font-mono leading-tight mt-0.5">
-                  {currentUser.email}
+                  {currentUser?.email || 'mdsinghnp@gmail.com'}
                 </p>
               </div>
             </div>
@@ -67,7 +67,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
               <button
                 type="button"
                 onClick={() => setShowSwitchModal(true)}
-                className="text-[#007185] hover:text-[#c7511f] hover:underline"
+                className="text-[#007185] hover:text-[#c7511f] hover:underline cursor-pointer"
               >
                 Switch Accounts
               </button>
@@ -78,14 +78,14 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                   logout();
                   setIsOpen(false);
                 }}
-                className="text-[#007185] hover:text-[#c7511f] hover:underline"
+                className="text-[#007185] hover:text-[#c7511f] hover:underline cursor-pointer"
               >
                 Sign Out
               </button>
             </div>
           </div>
 
-          {/* Two-Column Directory: Left: Your Lists | Right: Your Account (Matching Image 4) */}
+          {/* Two-Column Directory: Left: Your Lists | Right: Your Account */}
           <div className="grid grid-cols-2 gap-6 pt-1 border-t border-slate-100">
             {/* Left Column: Your Lists */}
             <div>
@@ -108,7 +108,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Find a List or Registry
+                    Wishlist &amp; Registry
                   </Link>
                 </li>
                 <li>
@@ -117,7 +117,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Your Saved Books
+                    Saved Items
                   </Link>
                 </li>
               </ul>
@@ -135,7 +135,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Account
+                    Account Settings
                   </Link>
                 </li>
                 <li>
@@ -144,7 +144,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Orders
+                    Orders &amp; Invoices
                   </Link>
                 </li>
                 <li>
@@ -153,34 +153,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Recommendations
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/products`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Browsing History
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/orders`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Your Shopping preferences
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/orders`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Watchlist
+                    Recommended for You
                   </Link>
                 </li>
                 <li>
@@ -189,52 +162,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                     onClick={() => setIsOpen(false)}
                     className="hover:text-[#c7511f] hover:underline text-xs block"
                   >
-                    Video Purchases &amp; Rentals
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/membership`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Kindle Unlimited
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/orders`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Content &amp; Devices
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/orders`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Subscribe &amp; Save Items
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/membership`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Memberships &amp; Subscriptions
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={`/${c}/products?cat=Digital+Music`}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-[#c7511f] hover:underline text-xs block"
-                  >
-                    Music Library
+                    Dhanshree Club
                   </Link>
                 </li>
 
@@ -263,7 +191,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
 
           {/* Dropdown Footer Tagline */}
           <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="font-semibold text-amber-700">
+            <span className="font-semibold text-emerald-700">
               Dhanshree
             </span>
             <span className="italic text-slate-400">
@@ -284,7 +212,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
               <button
                 type="button"
                 onClick={() => setShowSwitchModal(false)}
-                className="text-slate-400 hover:text-slate-700 font-bold text-lg"
+                className="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer"
               >
                 ✕
               </button>
@@ -292,7 +220,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
 
             <div className="space-y-2 mb-4">
               {availableUsers.map((u) => {
-                const isSelected = u.id === currentUser.id;
+                const isSelected = u.id === currentUser?.id;
                 return (
                   <button
                     key={u.id}
@@ -302,7 +230,7 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
                       setShowSwitchModal(false);
                       setIsOpen(false);
                     }}
-                    className={`w-full text-left p-3 rounded-lg text-xs flex items-center justify-between transition-colors border ${
+                    className={`w-full text-left p-3 rounded-lg text-xs flex items-center justify-between transition-colors border cursor-pointer ${
                       isSelected
                         ? 'bg-amber-50 border-amber-300 font-bold'
                         : 'bg-white hover:bg-slate-50 border-slate-200'
@@ -332,3 +260,5 @@ export function AmazonAccountDropdown({ countryCode }: AmazonAccountDropdownProp
     </div>
   );
 }
+
+export default DhanshreeAccountDropdown;

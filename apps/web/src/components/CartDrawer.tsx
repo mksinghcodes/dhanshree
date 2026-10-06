@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { CountryCode, CurrencyCode } from '@dhanshree/shared';
 
@@ -88,15 +88,72 @@ export function CartDrawer({ countryCode = CountryCode.NEPAL }: CartDrawerProps)
     );
   };
 
+  // Listen for global 'dhanshree:add-to-cart' event across the platform
+  useEffect(() => {
+    function handleAddToCartEvent(e: Event) {
+      const customEvent = e as CustomEvent<{
+        id?: string;
+        title: string;
+        price?: number;
+        image?: string;
+        variant?: string;
+      }>;
+      if (!customEvent.detail) return;
+      const detail = customEvent.detail;
+      setItems((prev) => {
+        const existing = prev.find((i) => i.title === detail.title || (detail.id && i.id === detail.id));
+        if (existing) {
+          return prev.map((i) => (i === existing ? { ...i, quantity: i.quantity + 1 } : i));
+        }
+        return [
+          ...prev,
+          {
+            id: detail.id || `item-${Date.now()}`,
+            title: detail.title,
+            variant: detail.variant || 'Standard Edition',
+            unitPrice: detail.price || (countryCode === 'NP' ? 2450 : countryCode === 'IN' ? 1550 : 75),
+            quantity: 1,
+            image: detail.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=120',
+          },
+        ];
+      });
+      setIsOpen(true);
+    }
+
+    window.addEventListener('dhanshree:add-to-cart', handleAddToCartEvent);
+    return () => window.removeEventListener('dhanshree:add-to-cart', handleAddToCartEvent);
+  }, [countryCode]);
+
+  const totalCartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+
   return (
     <>
+      {/* Modern High-Trust Shopping Cart Icon with Floating Count Badge */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="relative px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+        title="Shopping Cart"
+        aria-label={`Shopping cart with ${totalCartCount} items`}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm border border-transparent hover:border-white transition-all text-left relative shrink-0 group cursor-pointer"
       >
-        <span>🛒 कार्ट</span>
-        <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">
-          {items.reduce((sum, i) => sum + i.quantity, 0)}
+        <div className="relative flex items-center">
+          {/* Crisp Vector Shopping Trolley Icon */}
+          <svg
+            className="w-7 h-7 text-white fill-current transition-transform group-hover:scale-105"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+          </svg>
+
+          {/* Floating Gold/Emerald Dynamic Badge */}
+          <span className="absolute -top-1 -right-2 min-w-[19px] h-[19px] px-1 rounded-full bg-[#febd69] text-[#0f172a] font-black text-[11px] flex items-center justify-center shadow-md">
+            {totalCartCount}
+          </span>
+        </div>
+
+        <span className="text-[13px] text-white font-bold hidden sm:inline leading-tight pt-1">
+          Cart
         </span>
       </button>
 
