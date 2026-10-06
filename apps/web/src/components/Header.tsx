@@ -305,12 +305,6 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
               <span>All Categories</span>
             </button>
 
-            {/* Alexa for shopping badge */}
-            <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-900/60 border border-sky-400/40 text-sky-200 text-[11px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-              alexa for shopping
-            </span>
-
             {/* Today's Deals */}
             <Link
               href={`/${c}#todays-deals`}
