@@ -413,8 +413,7 @@ const DHANSHREE_CATALOG: ProductItem[] = [
   },
 ];
 
-// For backwards compatibility
-export const COMPUTER_CATALOG = DHANSHREE_CATALOG;
+const COMPUTER_CATALOG = DHANSHREE_CATALOG;
 
 export default function ProductsPage({ params }: ProductsPageProps) {
   const router = useRouter();
@@ -460,17 +459,61 @@ export default function ProductsPage({ params }: ProductsPageProps) {
 
   const filteredCatalog = useMemo(() => {
     return DHANSHREE_CATALOG.filter((item) => {
-      // 1. Category Filter (?cat=Kitchen, ?cat=Beauty, etc.)
+      // 1. Category Filter (?cat=Kitchen, ?cat=Computers, ?cat=Home & Kitchen, etc.)
       if (categoryParam && categoryParam !== 'All' && categoryParam !== 'All Departments') {
-        const catLower = categoryParam.toLowerCase();
-        const itemCatLower = item.category.toLowerCase();
+        const catLower = categoryParam.toLowerCase().trim();
+        const itemCatLower = item.category.toLowerCase().trim();
+        const itemSubLower = (item.subType || '').toLowerCase().trim();
+        const itemTitleLower = item.title.toLowerCase().trim();
+
         const matchesCategory =
+          itemCatLower === catLower ||
           itemCatLower.includes(catLower) ||
-          (catLower.includes('fashion') && (itemCatLower.includes('apparel') || itemCatLower.includes('fashion'))) ||
-          (catLower.includes('apparel') && (itemCatLower.includes('apparel') || itemCatLower.includes('fashion'))) ||
-          (catLower.includes('deals') && (item.badges.some((b) => b.toLowerCase().includes('deal')) || item.originalPriceNP > item.priceNP * 1.15)) ||
-          (catLower.includes('bestseller') && item.rating >= 4.7) ||
-          (catLower.includes('newrelease') && (item.badges.some((b) => b.toLowerCase().includes('new')) || item.prime));
+          catLower.includes(itemCatLower) ||
+          // Computers & Laptops
+          ((catLower.includes('computer') || catLower.includes('laptop') || catLower.includes('pc')) && itemCatLower === 'computers') ||
+          // Electronics & Gadgets
+          ((catLower.includes('electronic') || catLower.includes('gadget')) && itemCatLower === 'electronics') ||
+          // Mobile & Tablets
+          ((catLower.includes('mobile') || catLower.includes('tablet') || catLower.includes('phone')) &&
+            (itemCatLower === 'electronics' && (itemSubLower.includes('mobile') || itemTitleLower.includes('iphone')))) ||
+          // Audio & Headphones
+          ((catLower.includes('audio') || catLower.includes('headphone') || catLower.includes('earbud')) &&
+            (itemCatLower === 'electronics' && (itemSubLower.includes('audio') || itemTitleLower.includes('sony') || itemTitleLower.includes('headphone')))) ||
+          // Smart TVs & Video
+          (catLower.includes('tv') &&
+            (itemCatLower === 'electronics' && (itemSubLower.includes('tv') || itemTitleLower.includes('tv')))) ||
+          // Home & Kitchen / Kitchen & Dining
+          ((catLower.includes('kitchen') || catLower.includes('dining') || catLower.includes('home')) && itemCatLower === 'kitchen') ||
+          // Pooja & Mandir
+          ((catLower.includes('pooja') || catLower.includes('puja') || catLower.includes('mandir') || catLower.includes('idol')) &&
+            (itemCatLower === 'festive' || itemTitleLower.includes('murti') || itemTitleLower.includes('brass'))) ||
+          // Beauty & Personal Care
+          ((catLower.includes('beauty') || catLower.includes('care') || catLower.includes('skincare')) && itemCatLower === 'beauty') ||
+          // Fashion & Apparel
+          ((catLower.includes('apparel') || catLower.includes('fashion') || catLower.includes('cloth')) && itemCatLower === 'apparel') ||
+          // Men's Fashion
+          (catLower.includes('men') && !catLower.includes('women') &&
+            (itemCatLower === 'apparel' && (itemSubLower.includes('men') || itemTitleLower.includes('topi')))) ||
+          // Women's Fashion
+          (catLower.includes('women') &&
+            (itemCatLower === 'apparel' && (itemSubLower.includes('women') || itemTitleLower.includes('saree')))) ||
+          // Kids & Baby / Toys & Games
+          ((catLower.includes('toy') || catLower.includes('game') || catLower.includes('kid') || catLower.includes('baby') || catLower.includes('stem')) &&
+            itemCatLower === 'toys') ||
+          // Fitness & Sports
+          ((catLower.includes('fit') || catLower.includes('sport') || catLower.includes('gym')) && itemCatLower === 'fitness') ||
+          // Festive Deals & Hampers
+          ((catLower.includes('festiv') || catLower.includes('hamper') || catLower.includes('tika') || catLower.includes('dry fruit')) &&
+            itemCatLower === 'festive') ||
+          // Books & Learning
+          ((catLower.includes('book') || catLower.includes('learn') || catLower.includes('study')) && itemCatLower === 'books') ||
+          // Bestsellers
+          (catLower.includes('bestseller') &&
+            (item.rating >= 4.7 || item.badges.some((b) => b.toLowerCase().includes('bestseller')))) ||
+          // Deals & Offers
+          (catLower.includes('deal') &&
+            (item.badges.some((b) => b.toLowerCase().includes('deal')) || item.originalPriceNP > item.priceNP * 1.15));
 
         if (!matchesCategory) return false;
       }
@@ -482,7 +525,9 @@ export default function ProductsPage({ params }: ProductsPageProps) {
           item.title.toLowerCase().includes(qLower) ||
           item.subSpec.toLowerCase().includes(qLower) ||
           item.category.toLowerCase().includes(qLower) ||
-          item.brand.toLowerCase().includes(qLower);
+          (item.subType && item.subType.toLowerCase().includes(qLower)) ||
+          item.brand.toLowerCase().includes(qLower) ||
+          item.badges.some((b) => b.toLowerCase().includes(qLower));
 
         if (!matchesQuery) return false;
       }
@@ -572,7 +617,13 @@ export default function ProductsPage({ params }: ProductsPageProps) {
             </Link>
             <span>›</span>
             <span className="font-semibold text-slate-900">
-              {categoryParam ? `Category: ${categoryParam}` : query ? `Search: “${query}”` : 'All Categories'}
+              {categoryParam && query
+                ? `“${query}” in ${categoryParam}`
+                : categoryParam
+                ? `Category: ${categoryParam}`
+                : query
+                ? `Search: “${query}”`
+                : 'All Categories'}
             </span>
             <span className="text-slate-400 font-mono">
               ({displayCatalog.length} products available for trial)

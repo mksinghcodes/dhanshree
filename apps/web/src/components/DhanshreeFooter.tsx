@@ -199,7 +199,7 @@ export function DhanshreeFooter({ countryCode = 'NP' }: DhanshreeFooterProps) {
             </li>
             <li>
               <Link href={`/${c}/orders`} className="hover:text-white hover:underline transition-colors">
-                Your Account &amp; Lists
+                Your Accounts
               </Link>
             </li>
             <li>

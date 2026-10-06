@@ -33,13 +33,13 @@ export function DhanshreeAccountDropdown({ countryCode }: DhanshreeAccountDropdo
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex flex-col text-left px-2 py-1 rounded-sm border border-transparent hover:border-white transition-all cursor-pointer"
-        aria-label="Account and Lists Menu"
+        aria-label="Accounts Menu"
       >
         <span className="text-[11px] text-[#cccccc] leading-tight">
           Hello, {currentUser?.shortName || 'Manoj'}
         </span>
         <span className="text-[13px] text-white font-bold leading-tight flex items-center gap-1">
-          Account &amp; Lists
+          Accounts
           <span className="text-[9px] text-[#cccccc]">▼</span>
         </span>
       </button>

@@ -60,13 +60,29 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
+
+    // Sync search state from URL query parameters on mount
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCat = urlParams.get('cat');
+      if (urlCat) setSelectedCategory(urlCat);
+      const urlQ = urlParams.get('q');
+      if (urlQ) setSearchQuery(urlQ);
+    }
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearchSubmit = (e?: React.FormEvent, customQuery?: string) => {
+  const handleSearchSubmit = (
+    e?: React.FormEvent,
+    customQuery?: string,
+    customCategory?: string
+  ) => {
     if (e) e.preventDefault();
     const query = (customQuery !== undefined ? customQuery : searchQuery).trim();
-    const cat = selectedCategory !== 'All' ? selectedCategory : '';
+    const activeCategory = customCategory !== undefined ? customCategory : selectedCategory;
+    const cat =
+      activeCategory !== 'All' && activeCategory !== 'All Departments' ? activeCategory : '';
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (cat) params.set('cat', cat);
@@ -162,7 +178,10 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
               {/* Category Dropdown with Slightly Curved Left Corner */}
               <DhanshreeCategoryDropdown
                 selectedCategory={selectedCategory}
-                onSelectCategory={(cat) => setSelectedCategory(cat)}
+                onSelectCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  handleSearchSubmit(undefined, undefined, cat);
+                }}
               />
 
               {/* Input Field */}
@@ -273,7 +292,7 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
             <span className="text-[11px] text-slate-300 group-hover:text-white leading-tight">Wishlist</span>
           </Link>
 
-          {/* Account & Lists Dropdown */}
+          {/* Accounts Dropdown */}
           <DhanshreeAccountDropdown countryCode={currentCountry} />
 
           {/* Returns & Orders */}
