@@ -1,0 +1,17 @@
+{
+  "name": "@dhanshree/database",
+  "version": "1.0.0",
+  "description": "Dhanshree Financial Accounting & Relational Database Engine (PostgreSQL 16 & MySQL 8)",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

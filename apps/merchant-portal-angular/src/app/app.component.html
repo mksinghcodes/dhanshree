@@ -1,0 +1,64 @@
+<!-- ========================================================================= -->
+<!-- SEMANTIC HTML5 ENTERPRISE LAYOUT FOR ANGULAR CONSOLE                      -->
+<!-- ========================================================================= -->
+
+<!-- 1. Semantic Header with Satturn/Venus Branding -->
+<header class="ds-header" role="banner">
+  <div class="ds-container ds-header-inner">
+    <div class="ds-brand">
+      <div class="ds-brand-monogram">D</div>
+      <div>
+        <h1 class="ds-brand-title">
+          <span>DHANSHREE</span>
+          <span class="ds-brand-badge">Financial Operations</span>
+        </h1>
+        <small class="ds-fiscal-tag">Fiscal Cycle: {{ currentFiscalYear }}</small>
+      </div>
+    </div>
+
+    <nav class="ds-header-actions" aria-label="Portal Header Tools">
+      <button type="button" class="ds-btn ds-btn-secondary" (click)="printInvoiceReport()" title="Print Fiscal Tax Invoices">
+        <span>🖨️</span>
+        <span>Print Tax Ledger</span>
+      </button>
+      <a href="http://localhost:3000" class="ds-btn ds-btn-primary">
+        <span>🛒</span>
+        <span>Consumer Storefront &rarr;</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- 2. Main Financial Canvas (Brahmasthan) -->
+<main class="ds-container ds-main-canvas" role="main">
+  <!-- Top Banner: 0% Commission Festive Privilege -->
+  <aside class="ds-festive-alert" aria-label="Festive Announcement">
+    <div class="ds-alert-icon">🏮</div>
+    <div>
+      <h3 class="ds-alert-heading">दशैँ, तिहार तथा छठ २०८३: व्यपारी ०% कमिसन सुविधा सक्रिय</h3>
+      <p class="ds-alert-body">
+        नेपाल, भारत र युएईका सबै प्रमाणित बिक्रेताहरूका लागि २४-घण्टे बैंक फर्छ्यौट (Express Settlement) र शून्य कमिसन लागु छ।
+      </p>
+    </div>
+  </aside>
+
+  <!-- Financial KPI Metrics -->
+  <app-vastu-kpi-card></app-vastu-kpi-card>
+
+  <!-- Double-Entry Transaction Ledger Table -->
+  <app-transaction-ledger></app-transaction-ledger>
+</main>
+
+<!-- 3. Grounded Semantic Footer (South-West Stability) -->
+<footer class="ds-footer" role="contentinfo">
+  <div class="ds-container ds-footer-inner">
+    <p class="ds-footer-text">
+      &copy; 2026 Dhanshree Marketplace Inc. Registered with Inland Revenue Department (Nepal PAN), GSTN (India), and FTA (UAE).
+    </p>
+    <div class="ds-footer-badges">
+      <span class="ds-footer-badge">ACID Compliant</span>
+      <span class="ds-footer-badge">PostgreSQL &amp; MySQL Dual Relational</span>
+      <span class="ds-footer-badge">eSewa • Khalti • ConnectIPS • Razorpay</span>
+    </div>
+  </div>
+</footer>

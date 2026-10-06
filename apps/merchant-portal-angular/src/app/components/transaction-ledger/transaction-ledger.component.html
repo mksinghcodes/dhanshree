@@ -1,0 +1,138 @@
+<!-- ========================================================================= -->
+<!-- SEMANTIC HTML5 TRANSACTION LEDGER TABLE WITH ANGULAR REACTIVE BINDINGS   -->
+<!-- ========================================================================= -->
+
+<section class="ds-ledger-card" aria-label="Financial Transaction Ledger">
+  <!-- Top Action & Filter Row -->
+  <header class="ds-ledger-header">
+    <div class="ds-ledger-title-group">
+      <h2 class="ds-ledger-heading">कारोबार तथा वित्तीय खाता-बही (Transaction Ledger)</h2>
+      <p class="ds-ledger-subheading">
+        Double-entry financial accounting ledger with automated escrow releases and statutory VAT/GST compliance.
+      </p>
+    </div>
+
+    <!-- Country Currency Filter Pills -->
+    <nav class="ds-filter-pills" aria-label="Filter transactions by country">
+      <button
+        type="button"
+        class="ds-pill-btn"
+        [class.active]="selectedCountryFilter === 'ALL'"
+        (click)="setCountryFilter('ALL')"
+      >
+        All Markets
+      </button>
+      <button
+        type="button"
+        class="ds-pill-btn"
+        [class.active]="selectedCountryFilter === 'NP'"
+        (click)="setCountryFilter('NP')"
+      >
+        🇳🇵 Nepal (NPR)
+      </button>
+      <button
+        type="button"
+        class="ds-pill-btn"
+        [class.active]="selectedCountryFilter === 'IN'"
+        (click)="setCountryFilter('IN')"
+      >
+        🇮🇳 India (INR)
+      </button>
+      <button
+        type="button"
+        class="ds-pill-btn"
+        [class.active]="selectedCountryFilter === 'AE'"
+        (click)="setCountryFilter('AE')"
+      >
+        🇦🇪 UAE (AED)
+      </button>
+    </nav>
+  </header>
+
+  <!-- Responsive Semantic Table Container -->
+  <div class="ds-table-responsive">
+    <table class="ds-table" summary="Detailed multi-country transaction journal entries">
+      <thead>
+        <tr>
+          <th scope="col">Date / Reference</th>
+          <th scope="col">Market</th>
+          <th scope="col">Payment Gateway</th>
+          <th scope="col" class="text-right">Gross Amount</th>
+          <th scope="col" class="text-right">Statutory Tax</th>
+          <th scope="col" class="text-right">Net Payable</th>
+          <th scope="col">Vastu Root</th>
+          <th scope="col">Escrow Status</th>
+          <th scope="col" class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let txn of filteredTransactions">
+          <td>
+            <div class="ds-font-mono text-bold">{{ txn.orderNumber }}</div>
+            <time class="ds-text-muted ds-text-xs">{{ txn.date }}</time>
+          </td>
+
+          <td>
+            <span class="ds-country-tag">
+              <span *ngIf="txn.country === 'NP'">🇳🇵 Nepal</span>
+              <span *ngIf="txn.country === 'IN'">🇮🇳 India</span>
+              <span *ngIf="txn.country === 'AE'">🇦🇪 UAE</span>
+            </span>
+          </td>
+
+          <td>
+            <span class="ds-gateway-pill">{{ txn.paymentGateway }}</span>
+          </td>
+
+          <td class="text-right ds-font-mono text-bold">
+            {{ txn.currency }} {{ txn.grossAmount | number }}
+          </td>
+
+          <td class="text-right">
+            <span class="ds-tax-pill">{{ txn.taxLabel }}</span>
+            <div class="ds-font-mono ds-text-xs text-bold">{{ txn.currency }} {{ txn.vatTaxAmount | number }}</div>
+          </td>
+
+          <td class="text-right ds-font-mono text-bold ds-text-emerald">
+            {{ txn.currency }} {{ txn.netVendorPayable | number }}
+          </td>
+
+          <td>
+            <span
+              class="ds-vastu-badge"
+              [class.vastu-5]="txn.digitalRoot === 5"
+              [class.vastu-6]="txn.digitalRoot === 6"
+            >
+              #{{ txn.digitalRoot }} ({{ txn.digitalRoot === 5 ? 'Mercury' : 'Venus' }})
+            </span>
+          </td>
+
+          <td>
+            <span
+              class="ds-status-badge"
+              [class.status-held]="txn.status === 'HELD_IN_ESCROW'"
+              [class.status-released]="txn.status === 'RELEASED_TO_VENDOR'"
+            >
+              {{ txn.status === 'HELD_IN_ESCROW' ? '🔒 Held in Escrow' : '✅ Payout Released' }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            <button
+              *ngIf="txn.status === 'HELD_IN_ESCROW'"
+              type="button"
+              class="ds-btn-action"
+              (click)="releaseEscrow(txn.id)"
+              title="Release escrow to merchant account"
+            >
+              Release Payout
+            </button>
+            <span *ngIf="txn.status === 'RELEASED_TO_VENDOR'" class="ds-settled-text">
+              Settled
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

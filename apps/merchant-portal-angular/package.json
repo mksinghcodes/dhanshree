@@ -1,0 +1,12 @@
+{
+  "name": "@dhanshree/merchant-portal-angular",
+  "version": "1.0.0",
+  "description": "Dhanshree Enterprise Merchant & Financial Accounting Console (Angular 18/19 Architecture)",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Angular merchant portal ready'"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1"
+  }
+}

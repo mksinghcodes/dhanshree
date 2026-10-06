@@ -1,0 +1,195 @@
+/* ============================================================================== */
+/* DHANSHREE ENTERPRISE CSS3 DESIGN SYSTEM                                         */
+/* Pure CSS3 Variables, Fluid Grid, Transitions, Keyframes & Print Invoice Rules  */
+/* ============================================================================== */
+
+:root {
+  /* Brand Tokens: Saturn Navy, Mercury Emerald, Venus Gold */
+  --ds-navy-950: #070d18;
+  --ds-navy-900: #0f172a;
+  --ds-navy-800: #1e293b;
+  --ds-emerald-600: #059669;
+  --ds-emerald-500: #10b981;
+  --ds-emerald-50: #ecfdf5;
+  --ds-gold-500: #f59e0b;
+  --ds-gold-400: #fbbf24;
+  --ds-gold-50: #fffbeb;
+  --ds-slate-100: #f1f5f9;
+  --ds-slate-200: #e2e8f0;
+  --ds-slate-300: #cbd5e1;
+  --ds-slate-500: #64748b;
+  --ds-slate-700: #334155;
+  --ds-slate-900: #0f172a;
+  --ds-white: #ffffff;
+  
+  /* Elevation Shadows */
+  --ds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --ds-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Typography */
+  --ds-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --ds-font-mono: 'JetBrains Mono', monospace;
+  
+  /* Transitions */
+  --ds-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & HTML5 Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.ds-app-body {
+  font-family: var(--ds-font-sans);
+  background-color: #f8fafc;
+  color: var(--ds-slate-900);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fluid CSS3 Responsive Grid Container */
+.ds-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Semantic Top Header */
+.ds-header {
+  background-color: var(--ds-navy-900);
+  color: var(--ds-white);
+  border-bottom: 1px solid var(--ds-navy-800);
+  box-shadow: var(--ds-shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.ds-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.25rem;
+}
+
+.ds-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  text-decoration: none;
+  color: var(--ds-white);
+}
+
+.ds-brand-monogram {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, var(--ds-navy-950), #16263d);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--ds-gold-400);
+  box-shadow: var(--ds-shadow-sm);
+}
+
+.ds-brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ds-brand-badge {
+  font-size: 0.6875rem;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: var(--ds-emerald-500);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Modern CSS3 Button System */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.625rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--ds-transition-fast);
+  text-decoration: none;
+}
+
+.ds-btn-primary {
+  background-color: var(--ds-emerald-600);
+  color: var(--ds-white);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.ds-btn-primary:hover {
+  background-color: #047857;
+  transform: translateY(-1px);
+}
+
+.ds-btn-secondary {
+  background-color: var(--ds-white);
+  color: var(--ds-navy-900);
+  border-color: var(--ds-slate-300);
+}
+
+.ds-btn-secondary:hover {
+  background-color: var(--ds-slate-100);
+  border-color: var(--ds-slate-700);
+}
+
+/* Keyframe Animations */
+@keyframes pulseAuspicious {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+  }
+}
+
+.ds-pulse-vastu {
+  animation: pulseAuspicious 2.5s infinite;
+}
+
+/* ============================================================================== */
+/* CSS3 PRINT MEDIA QUERY: OFFICIAL FISCAL VAT / GST TAX INVOICES                */
+/* ============================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt;
+  }
+  .ds-header, .ds-btn, .ds-hide-print {
+    display: none !important;
+  }
+  .ds-invoice-paper {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .ds-print-visible {
+    display: block !important;
+  }
+}

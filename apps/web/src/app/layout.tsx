@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
+import { ReduxProvider } from '@/store/ReduxProvider';
 
 export const metadata: Metadata = {
   title: 'Dhanshree - Shop. Discover. Delight',
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen bg-slate-50 text-slate-900">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <ReduxProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

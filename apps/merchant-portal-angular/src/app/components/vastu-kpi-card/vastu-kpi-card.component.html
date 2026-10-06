@@ -1,0 +1,69 @@
+<!-- ========================================================================= -->
+<!-- SEMANTIC HTML5 FINANCIAL KPI METRICS GRID                                 -->
+<!-- ========================================================================= -->
+
+<section class="ds-kpi-grid" aria-label="Financial and Accounting Performance Cards">
+  <!-- Card 1: Gross Sales (Venus #6 Luxury & Prosperity) -->
+  <article class="ds-kpi-card card-venus">
+    <header class="ds-kpi-top">
+      <span class="ds-kpi-label">कुल बिक्री (Gross Sales Volume)</span>
+      <span class="ds-kpi-badge badge-gold">✨ Venus #6</span>
+    </header>
+    <div class="ds-kpi-value-row">
+      <data class="ds-kpi-number" [value]="summary.totalGrossRevenue">
+        रू {{ summary.totalGrossRevenue | number }}
+      </data>
+    </div>
+    <footer class="ds-kpi-footer">
+      <span>{{ summary.transactionCount }} active multi-country orders</span>
+    </footer>
+  </article>
+
+  <!-- Card 2: Escrow Locked (Saturn #8 Security & Trust) -->
+  <article class="ds-kpi-card card-saturn">
+    <header class="ds-kpi-top">
+      <span class="ds-kpi-label">एस्क्रो सुरक्षित मौज्दात (Escrow Locked)</span>
+      <span class="ds-kpi-badge badge-navy">🔒 Saturn #8</span>
+    </header>
+    <div class="ds-kpi-value-row">
+      <data class="ds-kpi-number" [value]="summary.totalEscrowHeld">
+        रू {{ summary.totalEscrowHeld | number }}
+      </data>
+    </div>
+    <footer class="ds-kpi-footer">
+      <span>Auto-releases upon verified delivery</span>
+    </footer>
+  </article>
+
+  <!-- Card 3: Released Merchant Payouts (Mercury #5 Fast Commerce) -->
+  <article class="ds-kpi-card card-mercury">
+    <header class="ds-kpi-top">
+      <span class="ds-kpi-label">भुक्तानी सम्पन्न (Settled Payouts)</span>
+      <span class="ds-kpi-badge badge-emerald">⚡ Mercury #5</span>
+    </header>
+    <div class="ds-kpi-value-row">
+      <data class="ds-kpi-number text-emerald" [value]="summary.totalReleasedPayouts">
+        रू {{ summary.totalReleasedPayouts | number }}
+      </data>
+    </div>
+    <footer class="ds-kpi-footer">
+      <span>Bank deposit processed via ConnectIPS / Razorpay</span>
+    </footer>
+  </article>
+
+  <!-- Card 4: Tax Collection (Nepal 13% VAT, India 18% GST, UAE 5% VAT) -->
+  <article class="ds-kpi-card card-tax">
+    <header class="ds-kpi-top">
+      <span class="ds-kpi-label">सरकारी कर मौज्दात (VAT / GST Ledger)</span>
+      <span class="ds-kpi-badge badge-tax">🏛️ Inland Revenue</span>
+    </header>
+    <div class="ds-kpi-value-row">
+      <data class="ds-kpi-number" [value]="summary.totalVatTaxCollected">
+        रू {{ summary.totalVatTaxCollected | number }}
+      </data>
+    </div>
+    <footer class="ds-kpi-footer">
+      <span>Ready for IRD (Nepal) & GSTN (India) return filing</span>
+    </footer>
+  </article>
+</section>
