@@ -3,7 +3,7 @@
 import React from 'react';
 import { CountryCode } from '@dhanshree/shared';
 import { useResolvedParams } from '@/lib/params';
-import { AmazonFrontPage } from '@/components/AmazonFrontPage';
+import { DhanshreeFrontPage } from '@/components/DhanshreeFrontPage';
 
 interface CountryPageProps {
   params: any;
@@ -20,5 +20,5 @@ export default function CountryStorefront({ params }: CountryPageProps) {
       ? CountryCode.UAE
       : CountryCode.NEPAL;
 
-  return <AmazonFrontPage countryCode={code} />;
+  return <DhanshreeFrontPage countryCode={code} />;
 }

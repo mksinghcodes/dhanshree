@@ -11,6 +11,7 @@ import { AmazonLeftDrawer } from './AmazonLeftDrawer';
 import { AmazonCategoryDropdown } from './AmazonCategoryDropdown';
 import { AmazonAccountDropdown } from './AmazonAccountDropdown';
 import { MobileBottomNav } from './MobileBottomNav';
+import { DhanshreeLogo } from './DhanshreeLogo';
 
 interface HeaderProps {
   currentCountry?: string;
@@ -124,27 +125,19 @@ export function Header({ currentCountry = 'NP' }: HeaderProps) {
         {/* 2. PRIMARY ACTION ROW (Main Header - Royal Navy Blue #0d1b2a)             */}
         {/* ========================================================================= */}
         <div className="bg-[#0d1b2a] text-white px-2 sm:px-4 py-1.5 flex items-center justify-between gap-2 sm:gap-4 h-[60px] shadow-sm">
-          {/* Logo with Prosperity Accent & Smile Curve */}
+          {/* Professional Vector Brand Logo (Monogram D + Shopping Bag + Growth Arrow) */}
           <Link
             href={`/${c}`}
             title="Dhanshree - Shop. Discover. Delight"
-            className="flex items-center gap-1 px-2 py-1 rounded-sm border border-transparent hover:border-white transition-all group shrink-0"
+            className="flex items-center px-1.5 py-1 rounded-sm border border-transparent hover:border-white transition-all group shrink-0"
           >
-            <div className="flex flex-col">
-              <div className="flex items-baseline">
-                <span className="text-xl sm:text-2xl font-black tracking-tighter text-white lowercase">
-                  dhanshree
-                </span>
-                <span className="text-[11px] text-[#febd69] font-bold ml-0.5">
-                  .{currentCountry.toLowerCase()}
-                </span>
-              </div>
-              {/* Smile curve */}
-              <div className="relative -mt-1 w-full h-1.5 flex items-center">
-                <div className="w-full h-[2.5px] bg-[#febd69] rounded-full transform -rotate-1 shadow-xs" />
-                <span className="text-[8px] text-[#febd69] -ml-1 -mt-1 font-bold">▶</span>
-              </div>
-            </div>
+            <DhanshreeLogo
+              variant="full"
+              theme="dark"
+              size="md"
+              countryCode={currentCountry}
+              subtext="ONLINE"
+            />
           </Link>
 
           {/* Location Selector (Deliver to [City / Region]) */}

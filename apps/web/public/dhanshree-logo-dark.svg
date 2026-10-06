@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" fill="none">
+  <defs>
+    <linearGradient id="arrowGradDark" x1="20" y1="80" x2="80" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#10B981" />
+      <stop offset="100%" stopColor="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Monogram Emblem -->
+  <g transform="translate(10, 0)">
+    <!-- Shopping Bag Handle -->
+    <path d="M38 28 C38 15, 62 15, 62 28" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="38" cy="28" r="2.5" fill="#F59E0B"/>
+    <circle cx="62" cy="28" r="2.5" fill="#F59E0B"/>
+
+    <!-- D / Shopping Bag Body -->
+    <path d="M20 28 C20 25.8 21.8 24 24 24 H56 C75.9 24 92 40.1 92 60 C92 79.9 75.9 96 56 96 H24 C21.8 96 20 94.2 20 92 V28 Z" fill="#FFFFFF"/>
+
+    <!-- Negative Space Cutout -->
+    <path d="M34 38 H54 C66.2 38 76 47.8 76 60 C76 72.2 66.2 82 54 82 H34 V38 Z" fill="#0F172A"/>
+
+    <!-- Upward Growth Arrow -->
+    <path d="M26 76 L42 60 L52 68 L74 44" stroke="url(#arrowGradDark)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M60 40 L78 40 L78 58 L72 52 L66 58 Z" fill="#10B981"/>
+  </g>
+
+  <!-- Wordmark "DHANSHREE" -->
+  <text x="125" y="62" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="40" letter-spacing="0.5">DHANSHREE</text>
+  
+  <!-- Subtitle "ONLINE" -->
+  <text x="127" y="86" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="14" letter-spacing="4">ONLINE</text>
+  <circle cx="215" cy="82" r="3" fill="#F59E0B"/>
+  <text x="228" y="86" fill="#94A3B8" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" letter-spacing="2">PROSPERITY</text>
+</svg>

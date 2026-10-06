@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { AmazonFrontPage } from '@/components/AmazonFrontPage';
+import { DhanshreeFrontPage } from '@/components/DhanshreeFrontPage';
 import { CountryCode } from '@dhanshree/shared';
 
 export default function HomePage() {
-  return <AmazonFrontPage countryCode={CountryCode.NEPAL} />;
+  return <DhanshreeFrontPage countryCode={CountryCode.NEPAL} />;
 }

@@ -5,6 +5,19 @@ import { AuthProvider } from '@/context/AuthContext';
 export const metadata: Metadata = {
   title: 'Dhanshree - Shop. Discover. Delight',
   description: 'Dhanshree: Shop. Discover. Delight. Global Multi-Vendor Marketplace for Nepal, India, and UAE - Dashain, Tihar & Chhath Festive 2026',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
+  openGraph: {
+    title: 'Dhanshree - Shop. Discover. Delight',
+    description: 'Premier Multi-Vendor E-Commerce Marketplace for Nepal, India, and UAE',
+    images: ['/brand/dhanshree-brand-identity.jpg'],
+  },
 };
 
 export default function RootLayout({
