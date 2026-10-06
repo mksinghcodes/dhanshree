@@ -146,8 +146,37 @@ export function AmazonFooter({ countryCode = 'NP' }: AmazonFooterProps) {
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-400 mt-4">
-          &ldquo;Shop. Discover. Delight&rdquo; &bull; &copy; 2026, Dhanshree.com, Inc. or its affiliates
+        {/* South-West (Stability & Security) Verified Trust Seals */}
+        <div className="max-w-[1020px] mx-auto px-4 mt-6 pt-6 border-t border-[#1e3452]/60 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-300">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-white text-[11px] uppercase tracking-wider">
+              🛡️ Verified Escrow Gateways:
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-2.5 py-1 rounded bg-[#162a45] text-emerald-400 font-bold border border-emerald-500/30 text-[11px]">
+              eSewa EPAY v2
+            </span>
+            <span className="px-2.5 py-1 rounded bg-[#162a45] text-purple-300 font-bold border border-purple-500/30 text-[11px]">
+              Khalti SDK
+            </span>
+            <span className="px-2.5 py-1 rounded bg-[#162a45] text-blue-300 font-bold border border-blue-500/30 text-[11px]">
+              ConnectIPS
+            </span>
+            <span className="px-2.5 py-1 rounded bg-[#162a45] text-cyan-300 font-bold border border-cyan-500/30 text-[11px]">
+              Razorpay UPI
+            </span>
+            <span className="px-2.5 py-1 rounded bg-[#162a45] text-amber-300 font-bold border border-amber-500/30 text-[11px]">
+              🚚 Cash on Delivery (COD)
+            </span>
+            <span className="px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-300 font-bold border border-emerald-400/50 text-[11px]">
+              ✓ IRD / GSTN Compliant
+            </span>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-slate-400 mt-5">
+          &ldquo;Shop. Discover. Delight&rdquo; &bull; Digital Vastu Harmonized Commerce &bull; &copy; 2026, Dhanshree Retail Online Pvt. Ltd. All Rights Reserved.
         </p>
       </div>
     </footer>

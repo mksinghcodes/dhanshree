@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { CountryCode, CurrencyCode, AdminDashboardMetrics } from '@dhanshree/shared';
 import { AdminNav } from '../../../components/AdminNav';
+import { AdminGuard } from '../../../components/AdminGuard';
 import { useResolvedParams } from '@/lib/params';
 
 interface PageProps {
@@ -59,8 +60,9 @@ export default function AdminDashboardPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900/5 flex flex-col font-sans">
-      <AdminNav countryCode={countryCode} />
+    <AdminGuard countryCode={countryCode}>
+      <div className="min-h-screen bg-slate-900/5 flex flex-col font-sans">
+        <AdminNav countryCode={countryCode} />
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Header & Global System Status */}
@@ -293,5 +295,6 @@ export default function AdminDashboardPage({ params }: PageProps) {
         </div>
       </main>
     </div>
+  </AdminGuard>
   );
 }

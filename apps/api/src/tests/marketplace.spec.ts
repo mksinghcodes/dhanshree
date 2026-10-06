@@ -3,6 +3,11 @@ import {
   CurrencyCode,
   OrderStatus,
   calculateItemTax,
+  getDigitalRoot,
+  formatVastuPrice,
+  isAuspiciousDigitalRoot,
+  generateAuspiciousCoupon,
+  getChaldeanVibration,
 } from '@dhanshree/shared';
 import * as crypto from 'crypto';
 
@@ -126,4 +131,40 @@ describe('Dhanshree Core Engine Verification', () => {
       expect(requiresOtp).toBe(true);
     });
   });
+
+  describe('Digital Vastu & Commercial Numerology Pricing Engine', () => {
+    it('accurately calculates digital roots via modulo-9 arithmetic', () => {
+      expect(getDigitalRoot(5000)).toBe(5); // 5+0+0+0 = 5 (Mercury)
+      expect(getDigitalRoot(1500)).toBe(6); // 1+5 = 6 (Venus)
+      expect(getDigitalRoot(4999)).toBe(4); // 4+9+9+9 = 31 -> 3+1 = 4 (Rahu)
+      expect(getDigitalRoot(1007)).toBe(8); // 1+0+0+7 = 8 (Saturn)
+    });
+
+    it('adjusts inauspicious root 4 (Rahu) and root 8 (Saturn) prices to auspicious 5 or 6', () => {
+      // 4999 has root 4 -> adjusted to 5000 (root 5)
+      const adjusted4999 = formatVastuPrice(4999);
+      const root4999 = getDigitalRoot(adjusted4999);
+      expect([5, 6]).toContain(root4999);
+      expect(isAuspiciousDigitalRoot(root4999)).toBe(true);
+
+      // 1007 has root 8 -> adjusted to root 5 or 6
+      const adjusted1007 = formatVastuPrice(1007);
+      const root1007 = getDigitalRoot(adjusted1007);
+      expect([5, 6]).toContain(root1007);
+      expect(isAuspiciousDigitalRoot(root1007)).toBe(true);
+    });
+
+    it('preserves existing auspicious prices with digital roots 5 and 6', () => {
+      expect(formatVastuPrice(5000)).toBe(5000);
+      expect(formatVastuPrice(1500)).toBe(1500); // 1+5 = 6
+    });
+
+    it('generates auspicious coupon vouchers matching target roots 5 and 6', () => {
+      const coupon5 = generateAuspiciousCoupon('DHAN', 5);
+      const coupon6 = generateAuspiciousCoupon('SHREE', 6);
+      expect(getChaldeanVibration(coupon5).root).toBe(5);
+      expect(getChaldeanVibration(coupon6).root).toBe(6);
+    });
+  });
 });
+

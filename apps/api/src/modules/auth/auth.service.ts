@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   BadRequestException,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -27,6 +28,7 @@ interface OtpRecord {
   code: string;
   expiresAt: number;
   purpose: string;
+  attempts: number;
 }
 
 @Injectable()
@@ -97,6 +99,10 @@ export class AuthService {
       };
     } catch (err: any) {
       if (err instanceof ConflictException) throw err;
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.error(`Registration database failure: ${err.message}`);
+        throw new InternalServerErrorException('Registration service temporarily unavailable');
+      }
       this.logger.warn(`Prisma not connected, using dev simulated user: ${err.message}`);
       
       const simulatedId = crypto.randomUUID();
@@ -149,6 +155,10 @@ export class AuthService {
       };
     } catch (err: any) {
       if (err instanceof UnauthorizedException) throw err;
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.error(`Login database failure: ${err.message}`);
+        throw new InternalServerErrorException('Authentication service temporarily unavailable');
+      }
       this.logger.warn(`Prisma not connected, using dev demo fallback for login: ${err.message}`);
 
       // Demo login fallback if DB isn't started yet
@@ -177,7 +187,7 @@ export class AuthService {
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
 
     const cacheKey = `${dto.countryCode}:${dto.phoneNumber}`;
-    this.otpCache.set(cacheKey, { code, expiresAt, purpose: dto.purpose });
+    this.otpCache.set(cacheKey, { code, expiresAt, purpose: dto.purpose, attempts: 0 });
 
     // Regional Courier/SMS Dispatcher
     let provider = 'Global SMS Gateway';
@@ -217,8 +227,25 @@ export class AuthService {
       throw new BadRequestException('OTP code has expired. Please request a new one');
     }
 
-    if (record.code !== dto.otpCode.trim()) {
-      throw new UnauthorizedException('Incorrect OTP code entered');
+    // Timing-safe comparison to prevent side-channel timing attacks
+    const isCodeMatch =
+      record.code.length === dto.otpCode.trim().length &&
+      crypto.timingSafeEqual(
+        Buffer.from(record.code, 'utf-8'),
+        Buffer.from(dto.otpCode.trim(), 'utf-8'),
+      );
+
+    if (!isCodeMatch) {
+      record.attempts = (record.attempts || 0) + 1;
+      if (record.attempts >= 3) {
+        this.otpCache.delete(cacheKey);
+        throw new UnauthorizedException(
+          'Maximum verification attempts exceeded. For security, this OTP code has been revoked. Please request a new code.',
+        );
+      }
+      throw new UnauthorizedException(
+        `Incorrect OTP code entered. ${3 - record.attempts} attempt(s) remaining.`,
+      );
     }
 
     // OTP consumed
@@ -252,7 +279,12 @@ export class AuthService {
         user: this.mapToAuthenticatedUser(user),
         tokens,
       };
-    } catch {
+    } catch (err: any) {
+      if (err instanceof UnauthorizedException || err instanceof BadRequestException) throw err;
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.error(`OTP verification database failure: ${err.message}`);
+        throw new InternalServerErrorException('Authentication service temporarily unavailable');
+      }
       const simulatedId = crypto.randomUUID();
       const tokens = await this.generateTokens(simulatedId, `${dto.phoneNumber}@phone.Dhanshree.com`, UserRole.BUYER, dto.countryCode, crypto.randomUUID());
       return {

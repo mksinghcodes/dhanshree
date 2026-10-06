@@ -4,6 +4,8 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { AmazonFooter } from '@/components/AmazonFooter';
+import { VastuHeroSection } from '@/components/VastuHeroSection';
+import { VastuProductCard } from '@/components/VastuProductCard';
 import { CountryCode, COUNTRY_CONFIGS } from '@dhanshree/shared';
 import { useAuth } from '@/context/AuthContext';
 
@@ -25,6 +27,62 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
       : config.defaultCurrency === 'INR'
       ? '₹'
       : 'AED';
+
+  // Vastu & Numerological Showcase Products (Roots 5 & 6)
+  const vastuShowcaseProducts = [
+    {
+      id: 'vp-macbook',
+      title: 'Apple MacBook Pro M3 Max (16-inch, 36GB RAM, 1TB SSD)',
+      slug: 'apple-macbook-pro-m3-max',
+      category: 'Electronics',
+      originalPrice: 380000,
+      discountPercent: 12,
+      rating: 4.9,
+      reviewCount: 342,
+      imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop',
+      badge: 'Mercury Fast Trade #5',
+      preferredVibration: 5 as const,
+    },
+    {
+      id: 'vp-kurti',
+      title: 'Pure Banarasi Handloom Festive Silk Saree with Zari Weave',
+      slug: 'pure-banarasi-festive-silk-saree',
+      category: 'Festive Fashion',
+      originalPrice: 18000,
+      discountPercent: 20,
+      rating: 4.8,
+      reviewCount: 189,
+      imageUrl: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&auto=format&fit=crop',
+      badge: 'Venus Luxury #6',
+      preferredVibration: 6 as const,
+    },
+    {
+      id: 'vp-mandir',
+      title: 'Pure Brass Asthadhatu Lakshmi-Ganesh Idol Set with Brass Diya',
+      slug: 'pure-brass-lakshmi-ganesh-idol',
+      category: 'Mandir & Living',
+      originalPrice: 6500,
+      discountPercent: 15,
+      rating: 4.9,
+      reviewCount: 512,
+      imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&auto=format&fit=crop',
+      badge: 'Maha Lakshmi Harmony #5',
+      preferredVibration: 5 as const,
+    },
+    {
+      id: 'vp-audio',
+      title: 'Spatial Studio Wireless Noise Cancelling Over-Ear Headphones',
+      slug: 'spatial-studio-wireless-headphones',
+      category: 'Audio & Gadgets',
+      originalPrice: 14999,
+      discountPercent: 25,
+      rating: 4.7,
+      reviewCount: 220,
+      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop',
+      badge: 'Venus Delight #6',
+      preferredVibration: 6 as const,
+    },
+  ];
 
   // 1. Tall Lifestyle Category Cards (Matching exact screenshot top row)
   const lifestyleCards = [
@@ -259,6 +317,9 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
           </div>
         </div>
 
+        {/* VASTU BRAHMASTHAN HERO & EAST WING CAROUSEL */}
+        <VastuHeroSection countryCode={countryCode} />
+
         {/* SECTION 1: AMAZON EXACT TALL LIFESTYLE CATEGORY CARDS (TOP ROW FROM SCREENSHOT) */}
         <section id="amazon-category-strip" className="relative group">
           <div
@@ -363,6 +424,57 @@ export function AmazonFrontPage({ countryCode = CountryCode.NEPAL }: AmazonFront
               </div>
             </div>
           ))}
+        </section>
+
+        {/* ========================================================================= */}
+        {/* SECTION 2.5: DIGITAL VASTU & NUMEROLOGICAL HARMONIC SHOWCASE              */}
+        {/* ========================================================================= */}
+        <section className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200/90 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✨</span>
+                <h2 className="text-xl font-bold text-[#0F172A] tracking-tight">
+                  Vastu Harmonic Collection • Commercial Root #5 &amp; #6
+                </h2>
+                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-[#F59E0B] text-[10px] font-black uppercase">
+                  Prosperity Calibrated
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Prices and discounts harmonized with Mercury (बुध #5 - Fast Trade) and Venus (शुक्र #6 - Customer Delight)
+              </p>
+            </div>
+            <Link
+              href={`/${c}/products`}
+              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 shrink-0"
+            >
+              <span>Explore All Vastu Products</span>
+              <span>→</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {vastuShowcaseProducts.map((product) => (
+              <VastuProductCard
+                key={product.id}
+                id={product.id}
+                title={product.title}
+                slug={product.slug}
+                category={product.category}
+                originalPrice={product.originalPrice}
+                discountPercent={product.discountPercent}
+                rating={product.rating}
+                reviewCount={product.reviewCount}
+                imageUrl={product.imageUrl}
+                badge={product.badge}
+                countryCode={countryCode}
+                currency={config.defaultCurrency}
+                preferredVibration={product.preferredVibration}
+                onAddToCart={() => setActiveToast(`Product added to cart with Root #${product.preferredVibration} harmony!`)}
+              />
+            ))}
+          </div>
         </section>
 
         {/* SECTION 3: AMAZON "TODAY'S DEALS: DASHAIN, TIHAR & CHHATH 2083" CAROUSEL */}
