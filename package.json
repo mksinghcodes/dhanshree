@@ -23,7 +23,12 @@
     "docker:up": "docker compose -f infra/docker-compose.yml up -d",
     "test": "npm run test:api",
     "test:api": "npm run test --workspace=apps/api",
-    "test:e2e": "npm run test:e2e --workspace=apps/web"
+    "test:e2e": "npm run test:e2e --workspace=apps/web",
+    "ai:all": "packages\\ai-engine\\.venv\\Scripts\\python.exe packages/ai-engine/main.py --mode all",
+    "ai:ml": "packages\\ai-engine\\.venv\\Scripts\\python.exe packages/ai-engine/main.py --mode ml",
+    "ai:eda": "packages\\ai-engine\\.venv\\Scripts\\python.exe packages/ai-engine/main.py --mode eda",
+    "ai:automate": "packages\\ai-engine\\.venv\\Scripts\\python.exe packages/ai-engine/main.py --mode automate",
+    "ai:test-order": "packages\\ai-engine\\.venv\\Scripts\\python.exe packages/ai-engine/main.py --test-order"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
