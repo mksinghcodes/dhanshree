@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.npm/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+*.mode1v3
+*.mode2v3
+*.normal
+*.perspectivev3
+*.pbxuser
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# Android
+android/app/dhanshree-release.keystore
+android/key.properties
+android/.gradle
+android/captures/
+android/local.properties
+**/android/build/
+**/android/app/build/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/ServiceDefinitions.json
+ios/build/
+
+# Fastlane
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots
+ios/fastlane/test_output
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.p8
+*.jks
+*.keystore
+firebase-service-account.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# System Generated Logs & Metadata
+.system_generated/
+*.metadata.json
+*.log
+coverage/

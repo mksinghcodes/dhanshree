@@ -1,0 +1,21 @@
+{
+  "name": "dhanshree-ecommerce",
+  "version": "1.0.0",
+  "description": "Dhanshree - Mobile E-Commerce & FinTech Platform for Nepal",
+  "main": "tests/run_test_suite.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/run_test_suite.mjs",
+    "test:coverage": "node --test --experimental-test-coverage tests/run_test_suite.mjs"
+  },
+  "keywords": [
+    "ecommerce",
+    "nepal",
+    "esewa",
+    "khalti",
+    "fintech",
+    "mobile"
+  ],
+  "author": "Dhanshree Engineering Team",
+  "license": "UNLICENSED"
+}

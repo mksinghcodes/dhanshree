@@ -1,0 +1,39 @@
+name: dhanshree_mobile
+description: "Dhanshree - Mobile E-Commerce Application for Nepal (Flutter Clean Architecture)"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management & Dependency Injection
+  flutter_riverpod: ^2.5.1
+
+  # Declarative Nested Route Management
+  go_router: ^14.0.1
+
+  # Offline Persistence & Local Database
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # High Performance Image Caching & Memory Cache
+  cached_network_image: ^3.3.1
+
+  # Typography (Poppins & Inter)
+  google_fonts: ^6.2.1
+
+  # Icons & Native Assets
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,809 @@
+openapi: 3.0.3
+info:
+  title: Dhanshree Mobile E-Commerce API
+  description: >
+    Production RESTful API contracts for Dhanshree (Nepal C2C/B2C marketplace).
+    Includes Nepal phone OTP authentication (+977), catalog search with Nepali transliteration,
+    cart management, and 1-page express checkout with eSewa, Khalti, and COD.
+  version: 1.0.0
+  contact:
+    name: Dhanshree Engineering Team
+    email: api-support@dhanshree.com.np
+servers:
+  - url: https://api.dhanshree.com.np
+    description: Production Cluster (AWS ap-south-1 Mumbai)
+  - url: https://staging-api.dhanshree.com.np
+    description: Staging Environment
+  - url: http://localhost:4000
+    description: Local Development Server
+
+tags:
+  - name: Authentication
+    description: Mobile phone OTP sign-in, verification, and token rotation
+  - name: Products & Catalog
+    description: Product discovery, search, filtering, and variant details
+  - name: Cart
+    description: Customer shopping cart synchronization and item modification
+  - name: Orders & Checkout
+    description: Express 1-page checkout, inventory reservation, and payment initiation
+  - name: Payments
+    description: Gateway verification callbacks for eSewa and Khalti
+
+paths:
+  # ==========================================
+  # AUTHENTICATION ENDPOINTS
+  # ==========================================
+  /api/v1/auth/send-otp:
+    post:
+      tags:
+        - Authentication
+      summary: Request 6-digit phone verification OTP
+      description: >
+        Sends an SMS containing a 6-digit OTP to a valid Nepali phone number (+977 98/97 series).
+        Strictly rate-limited (max 3 requests per 10 minutes per IP/phone).
+      operationId: sendOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOtpRequest'
+      responses:
+        '200':
+          description: OTP dispatched successfully via Nepal telecom gateway
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Maximum requests allowed in current window
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Remaining requests in current window
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendOtpResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+
+  /api/v1/auth/verify-otp:
+    post:
+      tags:
+        - Authentication
+      summary: Verify OTP and issue JWT access/refresh token pair
+      description: >
+        Validates the 6-digit code. If user does not exist, an account is automatically created
+        under the CUSTOMER role. Returns a short-lived access token and rotating refresh token.
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: OTP verified. User authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '400':
+          description: Invalid OTP or expired code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+
+  /api/v1/auth/refresh-token:
+    post:
+      tags:
+        - Authentication
+      summary: Rotate refresh token and get a new access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  example: "dGhpcy1pcy1hLXJlZnJlc2gtdG9rZW4tdXVpZA=="
+      responses:
+        '200':
+          description: Successfully refreshed tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPairResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==========================================
+  # PRODUCTS & CATALOG ENDPOINTS
+  # ==========================================
+  /api/v1/products:
+    get:
+      tags:
+        - Products & Catalog
+      summary: List and search products with multifaceted filters
+      description: >
+        Fetches products supporting full-text search (English and Nepali), category slugs,
+        price range, valley-only delivery, authentic seller badges, and sorting.
+      operationId: listProducts
+      parameters:
+        - name: q
+          in: query
+          description: Search term (e.g. "shilajit", "dhaka topi", "earbuds")
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Category slug (e.g. "nepali-handicrafts", "gadgets")
+          schema:
+            type: string
+        - name: brand
+          in: query
+          description: Brand slug
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          description: Minimum price in NPR
+          schema:
+            type: number
+            example: 500
+        - name: maxPrice
+          in: query
+          description: Maximum price in NPR
+          schema:
+            type: number
+            example: 10000
+        - name: codAvailable
+          in: query
+          description: Filter for Cash on Delivery items only
+          schema:
+            type: boolean
+        - name: province
+          in: query
+          description: Filter by delivery availability in specific province
+          schema:
+            $ref: '#/components/schemas/ProvinceEnum'
+        - name: sort
+          in: query
+          description: Sort ordering
+          schema:
+            type: string
+            enum: [newest, price_asc, price_desc, rating, popular]
+            default: newest
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Filtered product listing with pagination meta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductsResponse'
+
+  /api/v1/products/{id}:
+    get:
+      tags:
+        - Products & Catalog
+      summary: Get complete Product Details Page (PDP) payload
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID or slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Full PDP details with variants, seller profile, and delivery estimates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
+        '404':
+          description: Product not found
+
+  # ==========================================
+  # CART ENDPOINTS
+  # ==========================================
+  /api/v1/cart:
+    get:
+      tags:
+        - Cart
+      summary: Retrieve authenticated user's current shopping cart
+      operationId: getCart
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cart items with live stock status and subtotal calculations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Cart
+      summary: Add or update variant quantity in cart
+      operationId: addToCart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToCartRequest'
+      responses:
+        '200':
+          description: Item added or updated in cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Insufficient inventory stock or invalid variant
+
+  /api/v1/cart/items/{variantId}:
+    delete:
+      tags:
+        - Cart
+      summary: Remove a specific variant item from cart
+      operationId: removeCartItem
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Item removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+
+  # ==========================================
+  # ORDERS & CHECKOUT ENDPOINTS
+  # ==========================================
+  /api/v1/orders/checkout:
+    post:
+      tags:
+        - Orders & Checkout
+      summary: Place 1-page express order and initiate payment
+      description: >
+        Executes atomic checkout transaction:
+        1. Validates delivery address in Nepal.
+        2. Acquires pessimistic lock on inventory variants and decrements stock.
+        3. Creates Order and OrderItem records.
+        4. Initiates PaymentTransaction (generates eSewa signed form parameters, Khalti pidx initiate call, or marks COD pending).
+      operationId: expressCheckout
+      security:
+        - BearerAuth: []
+      headers:
+        Idempotency-Key:
+          schema:
+            type: string
+          required: true
+          description: Unique client UUID to prevent double-charging on network retry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+      responses:
+        '201':
+          description: Order successfully created and payment initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+        '400':
+          description: Stock shortage, inactive address, or validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Concurrent inventory conflict or duplicate idempotency key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==========================================
+  # PAYMENT GATEWAY CALLBACKS
+  # ==========================================
+  /api/v1/payments/verify-esewa:
+    post:
+      tags:
+        - Payments
+      summary: Verify eSewa ePay 2.0 transaction callback
+      description: Validates HMAC-SHA256 signature and executes server-to-server status lookup
+      operationId: verifyEsewaPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - encodedData
+              properties:
+                encodedData:
+                  type: string
+                  description: Base64-encoded response payload returned by eSewa redirect
+                  example: "eyJ0b3RhbF9hbW91bnQiOiIzNDU5LjAwIiwidHJhbnNhY3Rpb25fdXVpZCI6Ii4uLiJ9"
+      responses:
+        '200':
+          description: Payment verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentVerificationResult'
+
+  /api/v1/payments/verify-khalti:
+    post:
+      tags:
+        - Payments
+      summary: Verify Khalti EPAY transaction
+      description: Validates Khalti pidx against Khalti lookup API
+      operationId: verifyKhaltiPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pidx
+                - transactionUuid
+              properties:
+                pidx:
+                  type: string
+                  example: "HT6o6pebEcHoAAYdS6TFep"
+                transactionUuid:
+                  type: string
+                  example: "DHAN-TXN-20261007-4821"
+      responses:
+        '200':
+          description: Khalti payment verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentVerificationResult'
+
+# ==========================================
+# COMPONENTS & SCHEMAS
+# ==========================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ProvinceEnum:
+      type: string
+      enum:
+        - KOSHI
+        - MADHESH
+        - BAGMATI
+        - GANDAKI
+        - LUMBINI
+        - KARNALI
+        - SUDURPASHCHIM
+
+    PaymentGatewayEnum:
+      type: string
+      enum:
+        - ESEWA
+        - KHALTI
+        - FONEPAY_QR
+        - CASH_ON_DELIVERY
+        - CONNECT_IPS
+
+    SendOtpRequest:
+      type: object
+      required:
+        - phone
+      properties:
+        phone:
+          type: string
+          pattern: '^\+977[9][78]\d{8}$'
+          example: "+9779841234567"
+          description: E.164 formatted Nepali mobile number
+        purpose:
+          type: string
+          enum: [LOGIN_REGISTRATION, CHECKOUT_VERIFICATION, PHONE_CHANGE]
+          default: LOGIN_REGISTRATION
+
+    SendOtpResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "OTP successfully sent to +9779841234567"
+        cooldownSeconds:
+          type: integer
+          example: 60
+        expiresInSeconds:
+          type: integer
+          example: 300
+
+    VerifyOtpRequest:
+      type: object
+      required:
+        - phone
+        - otp
+      properties:
+        phone:
+          type: string
+          example: "+9779841234567"
+        otp:
+          type: string
+          pattern: '^\d{6}$'
+          example: "742951"
+
+    AuthSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        tokens:
+          $ref: '#/components/schemas/TokenPairResponse'
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone:
+          type: string
+          example: "+9779841234567"
+        fullName:
+          type: string
+          nullable: true
+          example: "Aayush Shrestha"
+        role:
+          type: string
+          enum: [CUSTOMER, SELLER, ADMIN]
+          example: CUSTOMER
+        isPhoneVerified:
+          type: boolean
+          example: true
+
+    TokenPairResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          example: "dGhpcy1pcy1hLXJlZnJlc2gtdG9rZW4tdXVpZA=="
+        expiresIn:
+          type: integer
+          description: Access token lifespan in seconds (e.g. 900 = 15m)
+          example: 900
+
+    PaginatedProductsResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 20
+            totalCount:
+              type: integer
+              example: 142
+            totalPages:
+              type: integer
+              example: 8
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCard'
+
+    ProductCard:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "Authentic Himalayan Organic Shilajit Resin"
+        titleNepali:
+          type: string
+          nullable: true
+          example: "अर्गानिक हिमालयन सिलाजित"
+        slug:
+          type: string
+          example: "authentic-himalayan-shilajit-resin"
+        startingPriceNpr:
+          type: number
+          example: 3499.00
+        compareAtPriceNpr:
+          type: number
+          nullable: true
+          example: 4999.00
+        thumbnailUrl:
+          type: string
+          example: "https://images.dhanshree.com.np/products/shilajit-1.webp"
+        isCodAvailable:
+          type: boolean
+          example: true
+        averageRating:
+          type: number
+          example: 4.9
+        reviewCount:
+          type: integer
+          example: 1240
+        sellerName:
+          type: string
+          example: "Himalayan Herbals"
+        isVerifiedSeller:
+          type: boolean
+          example: true
+
+    ProductDetailResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        isCodAvailable:
+          type: boolean
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariant'
+        seller:
+          type: object
+          properties:
+            storeName:
+              type: string
+            isVerifiedSeller:
+              type: boolean
+            rating:
+              type: number
+
+    ProductVariant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+          example: "SHILA-50G"
+        variantName:
+          type: string
+          example: "50g Resin"
+        priceNpr:
+          type: number
+          example: 3499.00
+        compareAtPriceNpr:
+          type: number
+          example: 4999.00
+        stockQuantity:
+          type: integer
+          example: 45
+        images:
+          type: array
+          items:
+            type: string
+        attributes:
+          type: object
+
+    AddToCartRequest:
+      type: object
+      required:
+        - variantId
+        - quantity
+      properties:
+        variantId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 1
+
+    CartResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        itemsCount:
+          type: integer
+          example: 2
+        subtotalNpr:
+          type: number
+          example: 3499.00
+        freeDeliveryProgressPercent:
+          type: integer
+          example: 80
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              cartItemId:
+                type: string
+                format: uuid
+              variantId:
+                type: string
+                format: uuid
+              productTitle:
+                type: string
+              variantName:
+                type: string
+              unitPriceNpr:
+                type: number
+              quantity:
+                type: integer
+              stockAvailable:
+                type: integer
+
+    CheckoutRequest:
+      type: object
+      required:
+        - shippingAddressId
+        - paymentGateway
+      properties:
+        shippingAddressId:
+          type: string
+          format: uuid
+          description: Selected Nepal delivery address ID from AddressBook
+        paymentGateway:
+          $ref: '#/components/schemas/PaymentGatewayEnum'
+        voucherCode:
+          type: string
+          nullable: true
+          example: "DHAN100"
+        customerNote:
+          type: string
+          nullable: true
+
+    CheckoutResponse:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        orderNumber:
+          type: string
+          example: "DHAN-20261007-89241"
+        totalAmountNpr:
+          type: number
+          example: 3459.00
+        orderStatus:
+          type: string
+          example: "PENDING_PAYMENT"
+        paymentDetails:
+          type: object
+          properties:
+            gateway:
+              $ref: '#/components/schemas/PaymentGatewayEnum'
+            transactionUuid:
+              type: string
+              example: "DHAN-TXN-20261007-4821"
+            paymentUrl:
+              type: string
+              nullable: true
+              example: "https://rc-epay.esewa.com.np/api/epay/main/v2/form"
+            paymentPayload:
+              type: object
+              description: Parameters required for client SDK or form POST (e.g. eSewa signed signature fields)
+              nullable: true
+
+    PaymentVerificationResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        orderId:
+          type: string
+          format: uuid
+        orderNumber:
+          type: string
+          example: "DHAN-20261007-89241"
+        status:
+          type: string
+          example: "ORDER_PLACED"
+        gatewayRefId:
+          type: string
+          example: "ESEWA-REF-89231"
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid phone number or OTP expired."
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequestError:
+      description: Invalid payload or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Missing or expired JWT bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequestsError:
+      description: Rate limit exceeded (Anti-abuse triggered)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
