@@ -1,6 +1,6 @@
-# 🇳🇵 Dhanshree - Mobile E-Commerce Application
+# 🇳🇵 Dhanshree Nepal - Mobile E-Commerce Application
 
-> Modern, top-tier mobile e-commerce platform architected for seamless buying and selling in Nepal, featuring local digital wallets (**eSewa**, **Khalti**), **Cash on Delivery (COD)** with SMS verification, and offline-first state persistence.
+> Premier mobile e-commerce & FinTech platform architected for seamless buying and selling in Nepal, India, and UAE, featuring local digital wallets (**eSewa**, **Khalti**), **Cash on Delivery (COD)** with SMS verification, and offline-first state persistence.
 
 ---
 

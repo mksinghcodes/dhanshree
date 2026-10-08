@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Dhanshree Mobile E-Commerce API
+  title: Dhanshree Nepal Mobile E-Commerce API
   description: >
-    Production RESTful API contracts for Dhanshree (Nepal C2C/B2C marketplace).
+    Production RESTful API contracts for Dhanshree Nepal (Nepal C2C/B2C marketplace).
     Includes Nepal phone OTP authentication (+977), catalog search with Nepali transliteration,
     cart management, and 1-page express checkout with eSewa, Khalti, and COD.
   version: 1.0.0

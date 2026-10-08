@@ -1,7 +1,7 @@
 {
-  "name": "dhanshree-ecommerce",
+  "name": "dhanshree-nepal",
   "version": "1.0.0",
-  "description": "Dhanshree - Mobile E-Commerce & FinTech Platform for Nepal",
+  "description": "Dhanshree Nepal - Mobile E-Commerce & FinTech Platform for Nepal, India & UAE",
   "main": "tests/run_test_suite.mjs",
   "type": "module",
   "scripts": {
