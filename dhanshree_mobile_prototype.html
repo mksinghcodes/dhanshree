@@ -48,41 +48,383 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 antialiased">
 
-  <!-- Top Global Header -->
-  <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6 relative z-50">
-    <div>
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-emerald-500 flex items-center justify-center shadow-lg">
-          <span class="text-slate-950 font-black text-xl font-heading">ध</span>
+  <!-- Smart & Modern Left Side Menu Drawer (Slide-Over, Compact Width w-64) -->
+  <div 
+    id="leftMenuOverlay" 
+    onclick="closeLeftSideMenu()" 
+    class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+  </div>
+
+  <aside 
+    id="leftSideMenuDrawer" 
+    class="fixed inset-y-0 left-0 z-50 w-64 max-w-[260px] bg-slate-950/95 backdrop-blur-2xl border-r border-slate-800 shadow-2xl flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-in-out">
+    
+    <!-- Drawer Top Header -->
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <!-- Compact Maha Lakshmi & Swastik Logo Icon -->
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 via-amber-600 to-emerald-600 p-0.5 shadow-md flex items-center justify-center">
+          <svg class="w-full h-full" viewBox="0 0 120 120" fill="none">
+            <rect x="8" y="8" width="104" height="104" rx="24" fill="#0F172A" stroke="#F59E0B" stroke-width="3"/>
+            <g transform="translate(60,60)">
+              <!-- Lotus Petals -->
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(45)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(90)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(135)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(180)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(225)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(270)" />
+              <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(315)" />
+              <!-- Swastik Core -->
+              <circle cx="0" cy="0" r="18" fill="#0A0F1D" stroke="#F59E0B" stroke-width="1.5"/>
+              <path d="M 0,-11 L 0,11 M 0,-11 L 10,-11 M 0,11 L -10,11 M -11,0 L 11,0 M 11,0 L 11,10 M -11,0 L -11,-10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="5" cy="-5" r="1.3" fill="#10B981" />
+              <circle cx="-5" cy="-5" r="1.3" fill="#10B981" />
+              <circle cx="-5" cy="5" r="1.3" fill="#10B981" />
+              <circle cx="5" cy="5" r="1.3" fill="#10B981" />
+            </g>
+          </svg>
         </div>
         <div>
-          <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2 font-heading">
-            धनश्री <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30">DHANSHREE.np</span>
-          </h1>
-          <p class="text-xs text-slate-400">“Shop. Discover. Delight” • Dashain, Tihar & Chhath 2083 • Mercury #5 & Venus #6 Digital Vastu</p>
+          <span class="font-black text-sm text-white font-heading tracking-tight" id="sideMenuBrandTitle">धनश्री</span>
+          <span class="block text-[9px] text-amber-400 font-bold uppercase tracking-wider">Smart Menu</span>
         </div>
       </div>
+      <button onclick="closeLeftSideMenu()" class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs cursor-pointer">
+        ✕
+      </button>
+    </div>
+
+    <!-- Drawer Scrollable Content (Smart Compact Rhythm) -->
+    <div class="flex-1 overflow-y-auto p-3 space-y-4 text-xs">
+      
+      <!-- Quick Language Switcher Inside Drawer -->
+      <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400 font-medium">🌐 भाषा (Language):</span>
+        <button onclick="toggleGlobalLang()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold hover:bg-emerald-500/30">
+          <span id="sideMenuLangBtnText">English / NE</span>
+        </button>
+      </div>
+
+      <!-- Section 1: App Screens -->
+      <div class="space-y-1">
+        <p class="px-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider">📱 एप स्क्रिनहरू (Screens)</p>
+        <button onclick="switchScreen('screen-onboarding'); closeLeftSideMenu();" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors text-left cursor-pointer">
+          <span>🔐</span>
+          <span class="font-semibold text-[11px]">१. अनबोर्डिङ & OTP</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors text-left cursor-pointer">
+          <span>🏠</span>
+          <span class="font-semibold text-[11px]">२. लाइभ होमपेज</span>
+        </button>
+        <button onclick="switchScreen('screen-pdp'); closeLeftSideMenu();" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors text-left cursor-pointer">
+          <span>🛍️</span>
+          <span class="font-semibold text-[11px]">३. प्रडक्ट PDP</span>
+        </button>
+        <button onclick="switchScreen('screen-checkout'); closeLeftSideMenu();" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors text-left cursor-pointer">
+          <span>💳</span>
+          <span class="font-semibold text-[11px]">४. १-पेज चेकआउट</span>
+        </button>
+        <button onclick="switchScreen('screen-tokens'); closeLeftSideMenu();" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors text-left cursor-pointer">
+          <span>⚡</span>
+          <span class="font-semibold text-[11px]">५. डिजाइन टोकनहरू</span>
+        </button>
+      </div>
+
+      <!-- Section 2: Departments -->
+      <div class="space-y-1 pt-2 border-t border-slate-800">
+        <p class="px-2 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">📦 विधा (Categories)</p>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>💻</span> <span>Electronics (कम्प्युटर)</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>👗</span> <span>Apparel (दशैँ नयाँ लुगा)</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>🪔</span> <span>Festive Puja (भाइटिका)</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>🍳</span> <span>Kitchen (भान्सा)</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>💄</span> <span>Beauty (सौन्दर्य)</span>
+        </button>
+        <button onclick="switchScreen('screen-home'); closeLeftSideMenu();" class="w-full flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 text-left text-[11px] cursor-pointer">
+          <span>🧸</span> <span>Toys (खेलौना)</span>
+        </button>
+      </div>
+
+      <!-- Section 3: Portals -->
+      <div class="space-y-1 pt-2 border-t border-slate-800">
+        <p class="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">🌐 व्यापार पोर्टल</p>
+        <a href="https://dhanshree-marketplace.vercel.app/np/seller" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-amber-300 hover:bg-slate-800 text-[11px]">
+          <span>🏪 व्यपारी (०% कमिसन)</span>
+          <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded">Live</span>
+        </a>
+        <a href="https://dhanshree-marketplace.vercel.app/np/admin" target="_blank" class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 text-[11px]">
+          <span>🛡️ सुपर एडमिन</span>
+          <span class="text-[9px] text-slate-400">Escrow</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="p-3 border-t border-slate-800 bg-slate-950/70 text-center">
+      <p class="text-[10px] text-slate-500">Dhanshree Mobile v1.0.0</p>
+      <p class="text-[9px] text-emerald-400 font-mono">Digital Vastu #5 & #6 Calibrated</p>
+    </div>
+  </aside>
+
+  <!-- Modern Location Picker Modal Overlay -->
+  <div id="locationModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white font-heading" id="locModalTitle">डेलिभरी स्थान छान्नुहोस्</h3>
+            <p class="text-[10px] text-slate-400">नेपालभर द्रुत तथा सुरक्षित होम डेलिभरी</p>
+          </div>
+        </div>
+        <button onclick="closeLocationModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-sm cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+        <button onclick="selectLocation('काठमाडौँ (Kathmandu)', 'Kathmandu, NP', '२४-घण्टा एक्सप्रेस डेलिभरी', '24h Express Delivery')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">काठमाडौँ उपत्यका (Kathmandu Valley)</p>
+              <p class="text-[10px] text-emerald-400 font-medium">⚡ २४-घण्टा एक्सप्रेस • नि:शुल्क (> रु ५,०००)</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('ललितपुर (Lalitpur)', 'Lalitpur, NP', 'फास्ट डोरस्टेप डेलिभरी', 'Fast Doorstep Delivery')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">ललितपुर (Lalitpur Hub)</p>
+              <p class="text-[10px] text-slate-400">पाटन, पुल्चोक, जावलाखेल, सातदोबाटो</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('भक्तपुर (Bhaktapur)', 'Bhaktapur, NP', 'एक्सप्रेस डेलिभरी', 'Express Delivery')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">भक्तपुर (Bhaktapur Hub)</p>
+              <p class="text-[10px] text-slate-400">सूर्यविनायक, दरबार स्क्वायर, थिमि</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('पोखरा (Pokhara)', 'Pokhara, NP', 'गण्डकी हब (१-२ दिन)', 'Gandaki Hub (1-2 Days)')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">पोखरा (Pokhara - Gandaki Hub)</p>
+              <p class="text-[10px] text-slate-400">लेकसाइड, महेन्द्रपुल, पृथ्वीचोक</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('चितवन (Chitwan)', 'Chitwan, NP', 'मध्य नेपाल हब', 'Central Nepal Hub')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">चितवन (Chitwan / Bharatpur)</p>
+              <p class="text-[10px] text-slate-400">भरतपुर, नारायणगढ, टाँडी</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('बुटवल (Butwal)', 'Butwal, NP', 'लुम्बिनी हब', 'Lumbini Hub')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">बुटवल / भैरहवा (Butwal Hub)</p>
+              <p class="text-[10px] text-slate-400">ट्राफिक चोक, बेलहिया, राजमार्ग</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+
+        <button onclick="selectLocation('विराटनगर (Biratnagar)', 'Biratnagar, NP', 'कोशी हब', 'Koshi Hub')" class="w-full text-left p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/10 border border-slate-700/80 hover:border-emerald-500/50 flex items-center justify-between group transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📍</span>
+            <div>
+              <p class="text-xs font-bold text-white group-hover:text-emerald-300">विराटनगर (Biratnagar - Koshi Hub)</p>
+              <p class="text-[10px] text-slate-400">धरान, इटहरी, विराट चोक</p>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white">›</span>
+        </button>
+      </div>
+
+      <p class="text-[10px] text-center text-slate-500 pt-1">🚚 नेपालका ७७ वटै जिल्लामा Cash on Delivery र eSewa भुक्तानी उपलब्ध</p>
+    </div>
+  </div>
+
+  <!-- Top Global Header -->
+  <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6 relative z-40">
+    <div class="flex items-center gap-3">
+      
+      <!-- Smart Left Side Menu Trigger Button -->
+      <button 
+        onclick="toggleLeftSideMenu()" 
+        id="sideMenuBtn" 
+        class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-md cursor-pointer transition-all active:scale-95 group" 
+        title="स्मार्ट साइड मेनु (Smart Modern Left Menu)">
+        <span class="text-base leading-none group-hover:text-amber-400 transition-colors">☰</span>
+        <span class="text-xs font-bold text-amber-300 hidden sm:inline font-heading">साइड मेनु</span>
+      </button>
+
+      <!-- Attractive Dhanshree Brand Logo: Maha Lakshmi Ashtadal Lotus + Sacred Geometric Swastik + Prosperity Gold -->
+      <div class="relative group cursor-pointer" onclick="toggleLeftSideMenu()" title="धनश्री मुख्य लोगो (Maha Lakshmi & Swastik Crest) - Click to Open Smart Menu">
+        <svg class="w-13 h-13 drop-shadow-[0_4px_16px_rgba(245,158,11,0.45)] hover:scale-105 transition-transform duration-300" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="goldGradLaxmi" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FEF08A" />
+              <stop offset="35%" stop-color="#F59E0B" />
+              <stop offset="80%" stop-color="#D97706" />
+              <stop offset="100%" stop-color="#92400E" />
+            </linearGradient>
+            <linearGradient id="crestBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1E293B" />
+              <stop offset="50%" stop-color="#0F172A" />
+              <stop offset="100%" stop-color="#020617" />
+            </linearGradient>
+            <radialGradient id="auraGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+
+          <!-- Outer Aura Glow -->
+          <circle cx="60" cy="60" r="56" fill="url(#auraGlow)"/>
+
+          <!-- Outer Rounded Octagonal Crest / E-Commerce Shield -->
+          <rect x="8" y="8" width="104" height="104" rx="26" fill="url(#crestBgGrad)" stroke="url(#goldGradLaxmi)" stroke-width="2.5"/>
+          <!-- Inner Dotted Prosperity Border -->
+          <rect x="12" y="12" width="96" height="96" rx="22" stroke="#10B981" stroke-opacity="0.5" stroke-width="1.2" stroke-dasharray="3 2"/>
+
+          <!-- 8 Sacred Lotus Petals (Ashtadal Maha Lakshmi Lotus - अष्टदल महालक्ष्मी कमल) -->
+          <g transform="translate(60,60)">
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(45)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(90)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(135)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(180)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(225)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(270)" />
+            <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="url(#goldGradLaxmi)" opacity="0.95" transform="rotate(315)" />
+
+            <!-- Inner Sacred Core Circle -->
+            <circle cx="0" cy="0" r="21" fill="#0A0F1D" stroke="url(#goldGradLaxmi)" stroke-width="1.8"/>
+
+            <!-- Sacred Swastik Symbol (Harmonious Vedic Geometry) -->
+            <path d="M 0,-14 L 0,14" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M 0,-14 L 13,-14" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M 0,14 L -13,14" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M -14,0 L 14,0" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M 14,0 L 14,13" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M -14,0 L -14,-13" stroke="url(#goldGradLaxmi)" stroke-width="3.2" stroke-linecap="round"/>
+
+            <!-- 4 Sacred Bindus (Lakshmi Purusharthas: Dharma, Artha, Kama, Moksha) -->
+            <circle cx="6.5" cy="-6.5" r="1.8" fill="#10B981" />
+            <circle cx="-6.5" cy="-6.5" r="1.8" fill="#10B981" />
+            <circle cx="-6.5" cy="6.5" r="1.8" fill="#10B981" />
+            <circle cx="6.5" cy="6.5" r="1.8" fill="#10B981" />
+
+            <!-- Central Divine Radiance Core -->
+            <circle cx="0" cy="0" r="2.2" fill="#FFFFFF"/>
+          </g>
+
+          <!-- 4 Auspicious Dhan Coins (Corner Prosperity Accents) -->
+          <circle cx="18" cy="18" r="3.5" fill="url(#goldGradLaxmi)" stroke="#FDE68A" stroke-width="0.8"/>
+          <circle cx="102" cy="18" r="3.5" fill="url(#goldGradLaxmi)" stroke="#FDE68A" stroke-width="0.8"/>
+          <circle cx="18" cy="102" r="3.5" fill="url(#goldGradLaxmi)" stroke="#FDE68A" stroke-width="0.8"/>
+          <circle cx="102" cy="102" r="3.5" fill="url(#goldGradLaxmi)" stroke="#FDE68A" stroke-width="0.8"/>
+        </svg>
+      </div>
+
+      <!-- Main Brand Heading: By Default "धनश्री", in English "Dhanshree" -->
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2 font-heading">
+          <span id="mainBrandHeading">धनश्री</span>
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30">DHANSHREE.np</span>
+        </h1>
+        <p class="text-xs text-slate-400" id="mainBrandSlogan">“किनमेल • खोजी • आनन्द” • दशैँ, तिहार तथा छठ २०८३ • बुध #५ र शुक्र #६ डिजिटल वास्तु</p>
+      </div>
+
     </div>
 
     <!-- Header Actions & Dropdown Navigation -->
     <div class="flex flex-wrap items-center gap-2.5">
+
+      <!-- Updated Modern Location Selector Component -->
+      <div 
+        onclick="openLocationPicker()" 
+        id="locationBtn"
+        title="डेलिभरी स्थान परिवर्तन गर्नुहोस् (Change Delivery Location)"
+        class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/90 text-slate-200 cursor-pointer shadow-md group transition-all">
+        <div class="relative flex items-center justify-center">
+          <span class="absolute w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping opacity-75"></span>
+          <!-- Updated Modern Vector GPS Pin Icon -->
+          <svg class="w-4 h-4 text-emerald-400 relative z-10 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+        </div>
+        <div class="text-left leading-tight">
+          <div class="flex items-center gap-1">
+            <span class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">डेलिभरी:</span>
+            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded font-bold">२४ घण्टा</span>
+          </div>
+          <div class="flex items-center gap-1 font-bold text-xs text-white group-hover:text-amber-300 transition-colors">
+            <span id="currentLocationText">काठमाडौँ (Kathmandu)</span>
+            <span class="text-[10px] text-amber-400">▾</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Language Switcher: Nepali (Default: धनश्री) / English (Dhanshree) -->
+      <button 
+        onclick="toggleGlobalLang()" 
+        id="globalLangToggleBtn" 
+        type="button"
+        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-800/90 hover:bg-slate-700/90 text-amber-300 border border-amber-500/30 shadow-md cursor-pointer transition-all active:scale-95"
+        title="भाषा परिवर्तन (Switch Language: धनश्री / Dhanshree)">
+        <span class="text-base leading-none">🌐</span>
+        <span id="globalLangToggleText">English (EN)</span>
+      </button>
       
-      <!-- मेन हेडिङ्ग मिनुको Dropdown Menu (Main Heading Dropdown Menu) -->
+      <!-- मेन हेडिङ्ग मिनुको Dropdown Menu (Smart Compact Width w-64) -->
       <div class="relative inline-block text-left" id="mainDropdownWrapper">
         <button 
           onclick="toggleMainHeadingDropdown(event)" 
           id="mainMenuBtn" 
           type="button" 
-          class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg border-2 border-emerald-400 cursor-pointer active:scale-95 transition-all ring-2 ring-emerald-500/20">
+          class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg border-2 border-emerald-400 cursor-pointer active:scale-95 transition-all ring-2 ring-emerald-500/20">
           <span class="text-base leading-none">☰</span>
           <span class="font-heading">मेन हेडिङ्ग मेनु (Dropdown Menu)</span>
           <span id="mainDropdownCaret" class="text-amber-300 font-black text-xs transition-transform duration-200 inline-block">▼</span>
         </button>
 
-        <!-- Main Heading Dropdown Panel -->
+        <!-- Main Heading Dropdown Panel (Smart & Compact Width w-64) -->
         <div 
           id="mainHeadingDropdown" 
-          class="hidden absolute right-0 mt-2 w-72 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700 shadow-2xl z-50 py-2 divide-y divide-slate-800 text-xs text-slate-200">
+          class="hidden absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700 shadow-2xl z-50 py-2 divide-y divide-slate-800 text-xs text-slate-200">
           
           <!-- Screen Navigation -->
           <div class="px-2 py-1.5 space-y-1">
@@ -246,9 +588,35 @@
 
             <!-- Illustration & Value Prop -->
             <div class="px-6 pt-4 pb-6 text-center flex flex-col items-center">
-              <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#0F172A] to-slate-800 border-2 border-amber-500/40 p-3 shadow-xl mb-4 flex items-center justify-center">
-                <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <div class="w-22 h-22 rounded-3xl bg-gradient-to-tr from-[#0F172A] via-slate-900 to-[#1E293B] border-2 border-amber-500/50 p-2 shadow-2xl mb-4 flex items-center justify-center">
+                <svg class="w-full h-full drop-shadow-md" viewBox="0 0 120 120" fill="none">
+                  <rect x="8" y="8" width="104" height="104" rx="24" fill="#0F172A" stroke="#F59E0B" stroke-width="2.5"/>
+                  <g transform="translate(60,60)">
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(45)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(90)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(135)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(180)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(225)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(270)" />
+                    <path d="M 0,-16 C -9,-26 -7,-43 0,-47 C 7,-43 9,-26 0,-16 Z" fill="#F59E0B" opacity="0.95" transform="rotate(315)" />
+                    <circle cx="0" cy="0" r="21" fill="#0A0F1D" stroke="#F59E0B" stroke-width="1.8"/>
+                    <path d="M 0,-14 L 0,14" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M 0,-14 L 13,-14" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M 0,14 L -13,14" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M -14,0 L 14,0" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M 14,0 L 14,13" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M -14,0 L -14,-13" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+                    <circle cx="6.5" cy="-6.5" r="1.8" fill="#10B981" />
+                    <circle cx="-6.5" cy="-6.5" r="1.8" fill="#10B981" />
+                    <circle cx="-6.5" cy="6.5" r="1.8" fill="#10B981" />
+                    <circle cx="6.5" cy="6.5" r="1.8" fill="#10B981" />
+                    <circle cx="0" cy="0" r="2.2" fill="#FFFFFF"/>
+                  </g>
+                  <circle cx="18" cy="18" r="3.5" fill="#F59E0B" stroke="#FDE68A" stroke-width="0.8"/>
+                  <circle cx="102" cy="18" r="3.5" fill="#F59E0B" stroke="#FDE68A" stroke-width="0.8"/>
+                  <circle cx="18" cy="102" r="3.5" fill="#F59E0B" stroke="#FDE68A" stroke-width="0.8"/>
+                  <circle cx="102" cy="102" r="3.5" fill="#F59E0B" stroke="#FDE68A" stroke-width="0.8"/>
                 </svg>
               </div>
               <h2 class="text-xl font-bold text-white tracking-tight font-heading mb-1" id="onbTitle">
@@ -340,15 +708,39 @@
               <div class="flex items-center justify-between">
                 <!-- Brand & Location -->
                 <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-amber-500 flex items-center justify-center font-black text-slate-950 text-xs">
-                    ध
+                  <!-- Compact Lakshmi & Swastik Crest Icon -->
+                  <div class="w-8 h-8 rounded-xl bg-[#0F172A] border border-amber-500/50 flex items-center justify-center p-0.5 shadow-md">
+                    <svg class="w-full h-full" viewBox="0 0 120 120" fill="none">
+                      <rect x="8" y="8" width="104" height="104" rx="24" fill="#0F172A" stroke="#F59E0B" stroke-width="3"/>
+                      <g transform="translate(60,60)">
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(45)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(90)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(135)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(180)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(225)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(270)" />
+                        <path d="M 0,-15 C -8,-24 -6,-38 0,-42 C 6,-38 8,-24 0,-15 Z" fill="#F59E0B" transform="rotate(315)" />
+                        <circle cx="0" cy="0" r="18" fill="#0A0F1D" stroke="#F59E0B" stroke-width="1.5"/>
+                        <path d="M 0,-11 L 0,11 M 0,-11 L 10,-11 M 0,11 L -10,11 M -11,0 L 11,0 M 11,0 L 11,10 M -11,0 L -11,-10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="5" cy="-5" r="1.3" fill="#10B981" />
+                        <circle cx="-5" cy="-5" r="1.3" fill="#10B981" />
+                        <circle cx="-5" cy="5" r="1.3" fill="#10B981" />
+                        <circle cx="5" cy="5" r="1.3" fill="#10B981" />
+                      </g>
+                    </svg>
                   </div>
                   <div class="text-left">
                     <div class="flex items-center gap-1 leading-none">
-                      <span class="font-black text-xs uppercase tracking-tight text-white font-heading">धनश्री</span>
+                      <span class="font-black text-xs uppercase tracking-tight text-white font-heading" id="mobileHomeBrandTitle">धनश्री</span>
                       <span class="text-[9px] font-bold text-amber-400">.np</span>
                     </div>
-                    <p class="text-[9px] text-slate-400 leading-none mt-0.5">Kathmandu, NP 📍</p>
+                    <!-- Updated Location Component (Interactive) -->
+                    <div onclick="openLocationPicker()" class="flex items-center gap-1 text-[9px] text-slate-300 hover:text-emerald-300 cursor-pointer mt-0.5 leading-none transition-colors">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <svg class="w-2.5 h-2.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                      <span id="mobLocationText">काठमाडौँ ▾</span>
+                    </div>
                   </div>
                 </div>
 
@@ -1416,7 +1808,172 @@ Frame: [Screen] Express_Checkout (393x852)
       document.getElementById('specContent').innerHTML = data.content;
     }
 
-    // Main Heading & Mobile Dropdown Handlers
+    // ==========================================
+    // 1. LANGUAGE STATE & TOGGLE ENGINE
+    // Default is Nepali ('धनश्री'), toggleable to English ('Dhanshree')
+    // ==========================================
+    let currentLang = 'ne';
+
+    function updateLanguageUI() {
+      const isEn = (currentLang === 'en');
+      
+      // Main Heading Brand Text
+      const brandHeading = document.getElementById('mainBrandHeading');
+      if (brandHeading) {
+        brandHeading.innerText = isEn ? 'Dhanshree' : 'धनश्री';
+      }
+
+      // Main Slogan
+      const brandSlogan = document.getElementById('mainBrandSlogan');
+      if (brandSlogan) {
+        brandSlogan.innerText = isEn
+          ? '“Shop. Discover. Delight” • Dashain, Tihar & Chhath 2083 • Mercury #5 & Venus #6 Digital Vastu'
+          : '“किनमेल • खोजी • आनन्द” • दशैँ, तिहार तथा छठ २०८३ • बुध #५ र शुक्र #६ डिजिटल वास्तु';
+      }
+
+      // Language Switcher Buttons
+      const globalToggleText = document.getElementById('globalLangToggleText');
+      if (globalToggleText) {
+        globalToggleText.innerText = isEn ? 'नेपाली (NE)' : 'English (EN)';
+      }
+
+      const sideMenuLangBtn = document.getElementById('sideMenuLangBtnText');
+      if (sideMenuLangBtn) {
+        sideMenuLangBtn.innerText = isEn ? 'नेपाली मा हेर्नुहोस्' : 'English / NE';
+      }
+
+      // Mobile Onboarding
+      const onbTitle = document.getElementById('onbTitle');
+      if (onbTitle) {
+        onbTitle.innerText = isEn ? 'Dhanshree' : 'धनश्री';
+      }
+
+      const onbDesc = document.getElementById('onbDesc');
+      if (onbDesc) {
+        onbDesc.innerText = isEn
+          ? 'Fastest buying & selling in Nepal. Direct eSewa & Khalti checkout with local doorstep delivery.'
+          : 'नेपालको सबैभन्दा छिटो किनमेल र बिक्रि मञ्च। इसेवा र खल्ती भुक्तानीको साथ घरदैलो डेलिभरी।';
+      }
+
+      const onbLangBtn = document.getElementById('langBtn');
+      if (onbLangBtn) {
+        onbLangBtn.innerText = isEn ? 'नेपाली' : 'English';
+      }
+
+      // Mobile Home Sticky Header
+      const mobHomeBrand = document.getElementById('mobileHomeBrandTitle');
+      if (mobHomeBrand) {
+        mobHomeBrand.innerText = isEn ? 'DHANSHREE' : 'धनश्री';
+      }
+
+      // Side Menu Brand
+      const sideBrand = document.getElementById('sideMenuBrandTitle');
+      if (sideBrand) {
+        sideBrand.innerText = isEn ? 'Dhanshree' : 'धनश्री';
+      }
+
+      // Document Title
+      document.title = isEn 
+        ? 'Dhanshree - Mobile Design System & Interactive Prototype'
+        : 'धनश्री - Mobile Design System & Interactive Prototype';
+      
+      // Update location labels for the active language
+      updateLocationUI();
+    }
+
+    function toggleGlobalLang() {
+      currentLang = (currentLang === 'ne') ? 'en' : 'ne';
+      updateLanguageUI();
+    }
+
+    function toggleLang() {
+      toggleGlobalLang();
+    }
+
+    // ==========================================
+    // 2. UPDATED LOCATION SELECTOR ENGINE
+    // ==========================================
+    let currentLocation = {
+      nameNe: 'काठमाडौँ (Kathmandu)',
+      nameEn: 'Kathmandu, NP',
+      shortNe: 'काठमाडौँ',
+      shortEn: 'Kathmandu'
+    };
+
+    function openLocationPicker() {
+      const modal = document.getElementById('locationModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeLocationModal() {
+      const modal = document.getElementById('locationModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function selectLocation(nameNe, nameEn, subNe, subEn) {
+      currentLocation.nameNe = nameNe;
+      currentLocation.nameEn = nameEn;
+      currentLocation.shortNe = nameNe.split(' ')[0];
+      currentLocation.shortEn = nameEn.split(' ')[0].replace(',', '');
+      updateLocationUI();
+      closeLocationModal();
+    }
+
+    function updateLocationUI() {
+      const isEn = (currentLang === 'en');
+      const locText = document.getElementById('currentLocationText');
+      if (locText) {
+        locText.innerText = isEn ? currentLocation.nameEn : currentLocation.nameNe;
+      }
+      const mobLoc = document.getElementById('mobLocationText');
+      if (mobLoc) {
+        mobLoc.innerText = (isEn ? currentLocation.shortEn : currentLocation.shortNe) + ' ▾';
+      }
+    }
+
+    // ==========================================
+    // 3. SMART MODERN LEFT SIDE MENU (DRAWER)
+    // ==========================================
+    function openLeftSideMenu() {
+      const drawer = document.getElementById('leftSideMenuDrawer');
+      const overlay = document.getElementById('leftMenuOverlay');
+      if (drawer) {
+        drawer.classList.remove('-translate-x-full');
+        drawer.classList.add('translate-x-0');
+      }
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.add('opacity-100'), 10);
+      }
+    }
+
+    function closeLeftSideMenu() {
+      const drawer = document.getElementById('leftSideMenuDrawer');
+      const overlay = document.getElementById('leftMenuOverlay');
+      if (drawer) {
+        drawer.classList.add('-translate-x-full');
+        drawer.classList.remove('translate-x-0');
+      }
+      if (overlay) {
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 250);
+      }
+    }
+
+    function toggleLeftSideMenu() {
+      const drawer = document.getElementById('leftSideMenuDrawer');
+      if (!drawer) return;
+      if (drawer.classList.contains('-translate-x-full')) {
+        openLeftSideMenu();
+      } else {
+        closeLeftSideMenu();
+      }
+    }
+
+    // ==========================================
+    // 4. MAIN HEADING & MOBILE DROPDOWN HANDLERS
+    // ==========================================
     function toggleMainHeadingDropdown(event) {
       if (event) {
         event.stopPropagation();
@@ -1455,7 +2012,7 @@ Frame: [Screen] Express_Checkout (393x852)
       if (mobDd) mobDd.classList.add('hidden');
     }
 
-    // Close dropdowns on click outside
+    // Close dropdowns & modals on click outside
     document.addEventListener('click', function(e) {
       const mainWrapper = document.getElementById('mainDropdownWrapper');
       const mobWrapper = document.getElementById('mobileMenuWrapper');
@@ -1468,6 +2025,15 @@ Frame: [Screen] Express_Checkout (393x852)
       if (mobWrapper && !mobWrapper.contains(e.target)) {
         const mobDd = document.getElementById('mobileHeaderDropdown');
         if (mobDd) mobDd.classList.add('hidden');
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAllDropdowns();
+        closeLeftSideMenu();
+        closeLocationModal();
       }
     });
 
@@ -1486,25 +2052,6 @@ Frame: [Screen] Express_Checkout (393x852)
     function resetToNumber() {
       document.getElementById('step-otp').classList.add('hidden');
       document.getElementById('step-number').classList.remove('hidden');
-    }
-
-    // Language Toggle
-    let isNepali = false;
-    function toggleLang() {
-      isNepali = !isNepali;
-      const title = document.getElementById('onbTitle');
-      const desc = document.getElementById('onbDesc');
-      const btn = document.getElementById('langBtn');
-
-      if (isNepali) {
-        title.innerText = 'धनश्री';
-        desc.innerText = 'नेपालको सबैभन्दा छिटो किनमेल र बिक्रि मञ्च। इसेवा र खल्ती भुक्तानीको साथ घरदैलो डेलिभरी।';
-        btn.innerText = 'English';
-      } else {
-        title.innerText = 'धनश्री';
-        desc.innerText = 'Fastest buying & selling in Nepal. Direct eSewa & Khalti checkout with local doorstep delivery.';
-        btn.innerText = 'नेपाली / EN';
-      }
     }
 
     // Cart Drawer Handlers
@@ -1545,7 +2092,9 @@ Frame: [Screen] Express_Checkout (393x852)
       switchScreen('screen-home');
     }
 
-    // Initialize default spec
+    // Initialize default UI states
+    updateLanguageUI();
+    updateLocationUI();
     switchScreen('screen-onboarding');
   </script>
 </body>
