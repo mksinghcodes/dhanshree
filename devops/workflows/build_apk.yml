@@ -1,4 +1,4 @@
-name: Build Downloadable Android APK
+name: Build Android APK & Play Store AAB Bundle
 
 on:
   workflow_dispatch: # Allows manual trigger from GitHub web interface
@@ -31,12 +31,21 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release
+      - name: Build Release APK & Play Store Bundle (AAB)
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
 
-      - name: Upload APK as Downloadable Artifact
+      - name: Upload Direct Install APK
         uses: actions/upload-artifact@v4
         with:
           name: dhanshree-nepal-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Upload Play Store Bundle (.aab)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dhanshree-nepal-playstore-aab
+          path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
