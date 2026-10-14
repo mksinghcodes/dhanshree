@@ -1,4 +1,4 @@
-name: Dhanshree Nepal Mobile CI/CD Pipeline
+name: धनश्री Mobile CI/CD Pipeline
 
 on:
   push:

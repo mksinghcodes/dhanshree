@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dhanshree Nepal - Mobile Design System & Interactive Prototype</title>
+  <title>धनश्री - Mobile Design System & Interactive Prototype</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,38 +49,156 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 antialiased">
 
   <!-- Top Global Header -->
-  <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6">
+  <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6 relative z-50">
     <div>
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-emerald-500 flex items-center justify-center shadow-lg">
           <span class="text-slate-950 font-black text-xl font-heading">ध</span>
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            DHANSHREE.np <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30">Live Sync: dhanshree-marketplace.vercel.app</span>
+          <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2 font-heading">
+            धनश्री <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30">DHANSHREE.np</span>
           </h1>
           <p class="text-xs text-slate-400">“Shop. Discover. Delight” • Dashain, Tihar & Chhath 2083 • Mercury #5 & Venus #6 Digital Vastu</p>
         </div>
       </div>
     </div>
 
-    <!-- Screen Navigation Switcher -->
-    <div class="flex flex-wrap items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-      <button onclick="switchScreen('screen-onboarding')" id="btn-onboarding" class="screen-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-emerald-500 text-slate-950 shadow-md">
-        1. Onboarding & OTP
-      </button>
-      <button onclick="switchScreen('screen-home')" id="btn-home" class="screen-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
-        2. Live Homepage
-      </button>
-      <button onclick="switchScreen('screen-pdp')" id="btn-pdp" class="screen-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
-        3. Product PDP
-      </button>
-      <button onclick="switchScreen('screen-checkout')" id="btn-checkout" class="screen-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
-        4. Cart & Checkout
-      </button>
-      <button onclick="switchScreen('screen-tokens')" id="btn-tokens" class="screen-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-amber-400 hover:bg-slate-800 border border-amber-500/30">
-        ⚡ Token Catalog
-      </button>
+    <!-- Header Actions & Dropdown Navigation -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      
+      <!-- मेन हेडिङ्ग मिनुको Dropdown Menu (Main Heading Dropdown Menu) -->
+      <div class="relative inline-block text-left" id="mainDropdownWrapper">
+        <button 
+          onclick="toggleMainHeadingDropdown(event)" 
+          id="mainMenuBtn" 
+          type="button" 
+          class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg border-2 border-emerald-400 cursor-pointer active:scale-95 transition-all ring-2 ring-emerald-500/20">
+          <span class="text-base leading-none">☰</span>
+          <span class="font-heading">मेन हेडिङ्ग मेनु (Dropdown Menu)</span>
+          <span id="mainDropdownCaret" class="text-amber-300 font-black text-xs transition-transform duration-200 inline-block">▼</span>
+        </button>
+
+        <!-- Main Heading Dropdown Panel -->
+        <div 
+          id="mainHeadingDropdown" 
+          class="hidden absolute right-0 mt-2 w-72 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700 shadow-2xl z-50 py-2 divide-y divide-slate-800 text-xs text-slate-200">
+          
+          <!-- Screen Navigation -->
+          <div class="px-2 py-1.5 space-y-1">
+            <p class="px-2.5 py-1 text-[10px] font-bold text-amber-400 uppercase tracking-wider">📱 एप स्क्रिनहरू (App Screens)</p>
+            <button onclick="switchScreen('screen-onboarding'); closeAllDropdowns();" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-slate-800 hover:text-white transition-colors text-left cursor-pointer">
+              <span>🔐</span>
+              <div>
+                <p class="font-bold">१. अनबोर्डिङ तथा फोन OTP</p>
+                <p class="text-[10px] text-slate-400">नेपाल १०-अङ्के नम्बर प्रमाणिकरण</p>
+              </div>
+            </button>
+            <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-slate-800 hover:text-white transition-colors text-left cursor-pointer">
+              <span>🏠</span>
+              <div>
+                <p class="font-bold">२. लाइभ होमपेज (Homepage)</p>
+                <p class="text-[10px] text-slate-400">वास्तु क्याटलग र चाडपर्व अफर</p>
+              </div>
+            </button>
+            <button onclick="switchScreen('screen-pdp'); closeAllDropdowns();" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-slate-800 hover:text-white transition-colors text-left cursor-pointer">
+              <span>🛍️</span>
+              <div>
+                <p class="font-bold">३. सामानको विवरण (Product PDP)</p>
+                <p class="text-[10px] text-slate-400">तस्बिर, वारेन्टी र भाउचर</p>
+              </div>
+            </button>
+            <button onclick="switchScreen('screen-checkout'); closeAllDropdowns();" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-slate-800 hover:text-white transition-colors text-left cursor-pointer">
+              <span>💳</span>
+              <div>
+                <p class="font-bold">४. १-पेज चेकआउट (Checkout)</p>
+                <p class="text-[10px] text-slate-400">eSewa, Khalti र Cash on Delivery</p>
+              </div>
+            </button>
+            <button onclick="switchScreen('screen-tokens'); closeAllDropdowns();" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-slate-800 hover:text-white transition-colors text-left cursor-pointer">
+              <span>⚡</span>
+              <div>
+                <p class="font-bold">५. टोकन क्याटलग (Design Tokens)</p>
+                <p class="text-[10px] text-slate-400">W3C Design Primitives</p>
+              </div>
+            </button>
+          </div>
+
+          <!-- Departments -->
+          <div class="px-2 py-1.5 space-y-1">
+            <p class="px-2.5 py-1 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">📦 मुख्य क्याटागोरी (Departments)</p>
+            <div class="grid grid-cols-2 gap-1 px-1">
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>💻</span><span>Electronics</span>
+              </button>
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>👗</span><span>Apparel</span>
+              </button>
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>🪔</span><span>Festive Puja</span>
+              </button>
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>🍳</span><span>Kitchen</span>
+              </button>
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>💄</span><span>Beauty</span>
+              </button>
+              <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-left text-[11px] cursor-pointer">
+                <span>🧸</span><span>Toys</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Portals -->
+          <div class="px-2 py-1.5 space-y-1">
+            <p class="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">🌐 बजार तथा बिक्रेता हब</p>
+            <a href="https://dhanshree-marketplace.vercel.app/np/seller" target="_blank" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+              <span class="flex items-center gap-1.5"><span>🏪</span> व्यपारी प्यानल (०% कमिसन)</span>
+              <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded">Active</span>
+            </a>
+            <a href="https://dhanshree-marketplace.vercel.app/np/admin" target="_blank" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+              <span class="flex items-center gap-1.5"><span>🛡️</span> सुपर एडमिन (Super Admin)</span>
+              <span class="text-[9px] text-slate-400">Escrow</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick Screen Select Dropdown (Native Dropdown) -->
+      <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 shadow-md">
+        <span class="text-xs text-amber-400">📱</span>
+        <select 
+          id="quickScreenSelect"
+          onchange="switchScreen(this.value); this.blur();" 
+          class="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer">
+          <option value="screen-onboarding" class="bg-slate-900 text-white">१. अनबोर्डिङ तथा फोन OTP</option>
+          <option value="screen-home" class="bg-slate-900 text-white">२. लाइभ होमपेज (Homepage)</option>
+          <option value="screen-pdp" class="bg-slate-900 text-white">३. सामानको विवरण (Product PDP)</option>
+          <option value="screen-checkout" class="bg-slate-900 text-white">४. १-पेज चेकआउट (Checkout)</option>
+          <option value="screen-tokens" class="bg-slate-900 text-white">⚡ ५. टोकन क्याटलग (Design Tokens)</option>
+        </select>
+      </div>
+
+      <!-- Quick Screen Switcher Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+        <button onclick="switchScreen('screen-onboarding')" id="btn-onboarding" class="screen-tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-emerald-500 text-slate-950 shadow-md">
+          1. OTP
+        </button>
+        <button onclick="switchScreen('screen-home')" id="btn-home" class="screen-tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
+          2. Home
+        </button>
+        <button onclick="switchScreen('screen-pdp')" id="btn-pdp" class="screen-tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
+          3. PDP
+        </button>
+        <button onclick="switchScreen('screen-checkout')" id="btn-checkout" class="screen-tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800">
+          4. Checkout
+        </button>
+        <button onclick="switchScreen('screen-tokens')" id="btn-tokens" class="screen-tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all text-amber-400 hover:bg-slate-800 border border-amber-500/30">
+          ⚡ Tokens
+        </button>
+      </div>
+
     </div>
   </header>
 
@@ -134,7 +252,7 @@
                 </svg>
               </div>
               <h2 class="text-xl font-bold text-white tracking-tight font-heading mb-1" id="onbTitle">
-                Dhanshree Nepal
+                धनश्री
               </h2>
               <p class="text-xs text-slate-400 max-w-xs" id="onbDesc">
                 Fastest buying & selling in Nepal. Direct eSewa & Khalti checkout with local doorstep delivery.
@@ -227,7 +345,7 @@
                   </div>
                   <div class="text-left">
                     <div class="flex items-center gap-1 leading-none">
-                      <span class="font-black text-xs uppercase tracking-tight text-white font-heading">DHANSHREE</span>
+                      <span class="font-black text-xs uppercase tracking-tight text-white font-heading">धनश्री</span>
                       <span class="text-[9px] font-bold text-amber-400">.np</span>
                     </div>
                     <p class="text-[9px] text-slate-400 leading-none mt-0.5">Kathmandu, NP 📍</p>
@@ -235,8 +353,37 @@
                 </div>
 
                 <!-- Right Header Actions -->
-                <div class="flex items-center gap-2">
-                  <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                <div class="flex items-center gap-1.5">
+                  <div class="relative" id="mobileMenuWrapper">
+                    <button onclick="toggleMobileDropdown(event)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-[10px] font-bold border border-slate-700 flex items-center gap-1 cursor-pointer">
+                      <span>मेनु</span>
+                      <span class="text-[8px]">▾</span>
+                    </button>
+                    <!-- Mobile Dropdown Panel -->
+                    <div id="mobileHeaderDropdown" class="hidden absolute right-0 mt-1.5 w-48 rounded-xl bg-slate-900/95 backdrop-blur-md border border-slate-700 shadow-2xl z-50 py-1 text-[11px] text-slate-200 divide-y divide-slate-800">
+                      <div class="p-1 space-y-0.5">
+                        <button onclick="switchScreen('screen-onboarding'); closeAllDropdowns();" class="w-full text-left px-2 py-1 rounded hover:bg-slate-800 flex items-center gap-1.5">
+                          <span>🔐</span> <span>१. अनबोर्डिङ</span>
+                        </button>
+                        <button onclick="switchScreen('screen-home'); closeAllDropdowns();" class="w-full text-left px-2 py-1 rounded hover:bg-slate-800 flex items-center gap-1.5 text-emerald-400 font-bold">
+                          <span>🏠</span> <span>२. होमपेज</span>
+                        </button>
+                        <button onclick="switchScreen('screen-pdp'); closeAllDropdowns();" class="w-full text-left px-2 py-1 rounded hover:bg-slate-800 flex items-center gap-1.5">
+                          <span>🛍️</span> <span>३. प्रडक्ट PDP</span>
+                        </button>
+                        <button onclick="switchScreen('screen-checkout'); closeAllDropdowns();" class="w-full text-left px-2 py-1 rounded hover:bg-slate-800 flex items-center gap-1.5">
+                          <span>💳</span> <span>४. चेकआउट</span>
+                        </button>
+                      </div>
+                      <div class="p-1">
+                        <a href="https://dhanshree-marketplace.vercel.app/np/seller" target="_blank" class="block px-2 py-1 rounded hover:bg-slate-800 text-amber-300">
+                          🏪 व्यपारी प्यानल (०% शुल्क)
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
                     🇳🇵 NPR
                   </span>
                   <div onclick="switchScreen('screen-checkout')" class="relative p-1.5 bg-slate-800 rounded-full cursor-pointer">
@@ -1256,12 +1403,73 @@ Frame: [Screen] Express_Checkout (393x852)
         activeBtn.classList.remove('text-slate-300');
       }
 
+      // Sync select dropdown
+      const quickSelect = document.getElementById('quickScreenSelect');
+      if (quickSelect) {
+        quickSelect.value = screenId;
+      }
+
       // Update Documentation Panel
       const data = specsData[screenId] || specsData['screen-onboarding'];
       document.getElementById('specPanelTitle').innerText = data.title;
       document.getElementById('specPanelSubtitle').innerText = data.subtitle;
       document.getElementById('specContent').innerHTML = data.content;
     }
+
+    // Main Heading & Mobile Dropdown Handlers
+    function toggleMainHeadingDropdown(event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      const dd = document.getElementById('mainHeadingDropdown');
+      const caret = document.getElementById('mainDropdownCaret');
+      if (!dd) return;
+      const isCurrentlyHidden = dd.classList.contains('hidden');
+      if (isCurrentlyHidden) {
+        dd.classList.remove('hidden');
+        if (caret) caret.style.transform = 'rotate(180deg)';
+      } else {
+        dd.classList.add('hidden');
+        if (caret) caret.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function toggleMobileDropdown(event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      const mobDd = document.getElementById('mobileHeaderDropdown');
+      if (mobDd) {
+        mobDd.classList.toggle('hidden');
+      }
+    }
+
+    function closeAllDropdowns() {
+      const dd = document.getElementById('mainHeadingDropdown');
+      const caret = document.getElementById('mainDropdownCaret');
+      if (dd) dd.classList.add('hidden');
+      if (caret) caret.style.transform = 'rotate(0deg)';
+      const mobDd = document.getElementById('mobileHeaderDropdown');
+      if (mobDd) mobDd.classList.add('hidden');
+    }
+
+    // Close dropdowns on click outside
+    document.addEventListener('click', function(e) {
+      const mainWrapper = document.getElementById('mainDropdownWrapper');
+      const mobWrapper = document.getElementById('mobileMenuWrapper');
+      if (mainWrapper && !mainWrapper.contains(e.target)) {
+        const dd = document.getElementById('mainHeadingDropdown');
+        const caret = document.getElementById('mainDropdownCaret');
+        if (dd) dd.classList.add('hidden');
+        if (caret) caret.style.transform = 'rotate(0deg)';
+      }
+      if (mobWrapper && !mobWrapper.contains(e.target)) {
+        const mobDd = document.getElementById('mobileHeaderDropdown');
+        if (mobDd) mobDd.classList.add('hidden');
+      }
+    });
 
     // OTP Interaction handlers
     function requestOTP() {
@@ -1289,11 +1497,11 @@ Frame: [Screen] Express_Checkout (393x852)
       const btn = document.getElementById('langBtn');
 
       if (isNepali) {
-        title.innerText = 'धनश्री नेपाल';
+        title.innerText = 'धनश्री';
         desc.innerText = 'नेपालको सबैभन्दा छिटो किनमेल र बिक्रि मञ्च। इसेवा र खल्ती भुक्तानीको साथ घरदैलो डेलिभरी।';
         btn.innerText = 'English';
       } else {
-        title.innerText = 'Dhanshree Nepal';
+        title.innerText = 'धनश्री';
         desc.innerText = 'Fastest buying & selling in Nepal. Direct eSewa & Khalti checkout with local doorstep delivery.';
         btn.innerText = 'नेपाली / EN';
       }

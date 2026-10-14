@@ -39,13 +39,13 @@ jobs:
       - name: Upload Direct Install APK
         uses: actions/upload-artifact@v4
         with:
-          name: dhanshree-nepal-release-apk
+          name: dhanshree-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
       - name: Upload Play Store Bundle (.aab)
         uses: actions/upload-artifact@v4
         with:
-          name: dhanshree-nepal-playstore-aab
+          name: dhanshree-playstore-aab
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 30

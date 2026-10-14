@@ -26,7 +26,7 @@ class DhanshreeApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Dhanshree Nepal',
+      title: 'धनश्री',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: router,

@@ -428,7 +428,7 @@ class _HomeTabScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dhanshree Nepal'),
+        title: const Text('धनश्री'),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
